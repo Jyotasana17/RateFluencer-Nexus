@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 /* ────────────────────────────────────────────────────────────
    SVG Icon Components — lightweight inline vectors, no heavy files
@@ -178,14 +179,15 @@ export default function TrendFatigueEnginePage() {
           </div>
 
           {/* Creator Login Button */}
-          <button
+          <Link
             id="creator-login-btn"
+            href="/dashboard"
             className="rounded-full border border-neon/30 bg-neon/10 px-6 py-2.5 text-sm font-medium text-white
                        transition-all duration-300 hover:bg-neon/20 hover:border-neon/50
-                       hover:shadow-[0_0_30px_rgba(0,163,255,0.3)] active:scale-95"
+                       hover:shadow-[0_0_30px_rgba(0,163,255,0.3)] active:scale-95 text-center flex items-center justify-center"
           >
             Creator Login
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -441,13 +443,14 @@ export default function TrendFatigueEnginePage() {
           </p>
 
           {/* Quick Login CTA */}
-          <button
+          <Link
             id="footer-login-btn"
+            href="/dashboard"
             className="group relative inline-flex items-center gap-2 rounded-full border border-neon/30 bg-neon/10 px-10 py-4 text-base font-semibold text-white
                        transition-all duration-500 animate-pulse-glow
                        hover:bg-neon/20 hover:border-neon/50
                        hover:shadow-[0_0_30px_rgba(0,163,255,0.4)]
-                       active:scale-[0.97]"
+                       active:scale-[0.97] text-center"
           >
             Quick Login
             <svg
@@ -459,7 +462,7 @@ export default function TrendFatigueEnginePage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </button>
+          </Link>
         </div>
       </section>
 
