@@ -1,24 +1,25 @@
 import {
-  BarChart3,
   Bot,
   BrainCircuit,
   Compass,
-  FlaskConical,
   Home,
   Orbit,
   Radar,
   Sparkles,
-  WandSparkles
+  WandSparkles,
+  Skull,
+  TrendingUp,
+  Settings
 } from "lucide-react";
 
 export const navItems = [
   { label: "Home", href: "/dashboard", icon: Home },
+  { label: "Fatigue Radar", href: "/dashboard/fatigue-radar", icon: Skull },
+  { label: "Stock Market", href: "/dashboard/stock-market", icon: TrendingUp },
   { label: "Discovery", href: "/dashboard/discovery", icon: Compass },
   { label: "DNA", href: "/dashboard/dna", icon: Radar },
   { label: "Campaign Lab", href: "/dashboard/campaign-lab", icon: Orbit },
-  { label: "Content Lab", href: "/dashboard/content-lab", icon: FlaskConical },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { label: "AI Agent", href: "/dashboard/ai-agent", icon: Bot }
+  { label: "Settings", href: "/dashboard/settings", icon: Settings }
 ];
 
 export const dnaMetrics = [
