@@ -154,7 +154,7 @@ export default function FatigueRadarPage() {
         setIsGenerating(false);
         setGenerationFinished(true);
       }
-    }, 600);
+    }, 150);
   };
 
   const handleCustomTrendSubmit = (e: React.FormEvent) => {

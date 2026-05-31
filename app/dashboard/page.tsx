@@ -33,9 +33,9 @@ export default function OverviewPage() {
       ];
       const randomLog = logs[Math.floor(Math.random() * logs.length)];
       setTerminalLogs((prev) => [...prev.slice(-4), randomLog]);
-    }, 5000);
+    }, scanInterval * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [scanInterval]);
 
   const criticalAlertsCount = mockTrendsData.filter(
     (t) => t.fatigueScore >= fatigueThreshold

@@ -36,7 +36,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       setIsAuthenticated(true);
       triggerNotification("Secured Connection Established. Tactical overview loaded.");
-    }, 1200);
+    }, 350);
   };
 
   const handleDisconnect = () => {
