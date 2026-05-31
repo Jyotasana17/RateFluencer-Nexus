@@ -13,7 +13,7 @@ const config: Config = {
         night: "#0A1022",
         slatefield: "#0F172A",
         nexus: "#6D5DFC",
-        cyan: "#00E5FF", 0
+        cyan: "#00E5FF",
         mint: "#14F195",
         bloom: "#FF4D8D",
         text: "#FFFFFF",

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "t1",
+    "trendName": "Day In My Life (Tech Bro)",
+    "status": "Critical Fatigue",
+    "fatigueScore": 92,
+    "sentiment": ["boring", "fake", "overrated", "unrealistic"],
+    "aiCounterNarrative": "The Ugly Reality of Working in Tech",
+    "viralityPrediction": "96%",
+    "candlestickData": [
+      { "x": "Week 1", "y": [40, 60, 35, 55] },
+      { "x": "Week 2", "y": [55, 80, 50, 75] },
+      { "x": "Week 3", "y": [75, 95, 70, 90] },
+      { "x": "Week 4", "y": [90, 92, 40, 45] }, 
+      { "x": "Week 5", "y": [45, 50, 10, 15] } 
+    ]
+  },
+  {
+    "id": "t2",
+    "trendName": "Aggressive Hustle Motivation",
+    "status": "High Fatigue",
+    "fatigueScore": 84,
+    "sentiment": ["exhausting", "toxic", "cringe"],
+    "aiCounterNarrative": "Why I Stopped Hustling and Started Living",
+    "viralityPrediction": "88%",
+    "candlestickData": [
+      { "x": "Week 1", "y": [20, 40, 15, 35] },
+      { "x": "Week 2", "y": [35, 60, 30, 55] },
+      { "x": "Week 3", "y": [55, 65, 45, 48] },
+      { "x": "Week 4", "y": [48, 55, 25, 30] }
+    ]
+  }
+]
