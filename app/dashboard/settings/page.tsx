@@ -1,140 +1,119 @@
 "use client";
 
-import React from "react";
-import {
-  Sliders,
-  Volume2,
-  VolumeX,
-  Cpu,
-  RefreshCw,
-  Bell
-} from "lucide-react";
+import React, { useState } from "react";
+import { User, Mail, LogOut, Check, Save } from "lucide-react";
 import { useNexusStore } from "@/lib/store";
 
 export default function SettingsPage() {
-  const {
-    fatigueThreshold,
-    setFatigueThreshold,
-    audioAlerts,
-    setAudioAlerts,
-    scanInterval,
-    setScanInterval,
-    aiModel,
-    setAiModel
-  } = useNexusStore();
+  const { setIsAuthenticated } = useNexusStore();
+  const [name, setName] = useState("John Doe");
+  const [email, setEmail] = useState("john@trendfatigue.ai");
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      {/* Header section */}
-      <div>
-        <h2 className="text-xl font-bold tracking-tight md:text-2xl uppercase">
-          Tactical Configurations
+    <div className="max-w-xl mx-auto space-y-8 animate-fade-in-up">
+      {/* Header */}
+      <div className="text-center sm:text-left space-y-1 select-none">
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">
+          System Settings
         </h2>
-        <p className="text-xs text-ghost">
-          Configure scanning sensitivity parameters, custom alert thresholds, and preferred NLP sentiment models.
+        <p className="text-xs text-slate-400 font-semibold">
+          Manage your creator profile authentication and workspace credentials.
         </p>
       </div>
 
-      {/* Configurations Panel */}
-      <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 backdrop-blur-md space-y-8">
-        <div className="border-b border-white/5 pb-4">
-          <h3 className="text-sm font-bold tracking-tight flex items-center gap-2 font-mono">
-            <Sliders className="h-4 w-4 text-cyan" />
-            CORE SETTINGS CONTROL PANEL
-          </h3>
-          <span className="text-[10px] font-mono text-ghost/40">SYSTEM ADJUSTMENT MATRIX</span>
+      {/* Settings Panel */}
+      <div className="bg-white border border-[#E2E8F0] rounded-[24px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 h-24 w-24 bg-blue-50/20 rounded-full blur-xl pointer-events-none -z-10" />
+
+        <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-base select-none">⚙️</span>
+            <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+              Profile Configurations
+            </h3>
+          </div>
+          <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+            Creator
+          </span>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Left Configuration Column */}
-          <div className="space-y-6">
-            {/* Fatigue Slider metric */}
-            <div className="space-y-3">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="text-ghost">FATIGUE ALERT THRESHOLD:</span>
-                <span className="text-cyan font-bold">{fatigueThreshold}% Burnout</span>
-              </div>
+        <form onSubmit={handleSave} className="space-y-5">
+          {/* Name Field */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+              Full Name
+            </label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
-                type="range"
-                min="50"
-                max="95"
-                value={fatigueThreshold}
-                onChange={(e) => setFatigueThreshold(Number(e.target.value))}
-                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 bg-[#F8F9FD] border border-[#E5E9F0] focus:border-blue-400 focus:bg-white focus:shadow-[0_0_12px_rgba(59,130,246,0.08)] rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all"
+                required
               />
-              <p className="text-[10px] font-mono text-ghost/40 leading-relaxed">
-                Critical warnings will only flag trends surpassing this target fatigue burnout score globally.
-              </p>
-            </div>
-
-            {/* AI Model selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-mono text-ghost block flex items-center gap-1.5">
-                <Cpu className="h-3.5 w-3.5 text-cyan" />
-                SENTIMENT LLM ENGINE:
-              </label>
-              <select
-                value={aiModel}
-                onChange={(e) => setAiModel(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-black py-2.5 px-3 text-xs font-mono text-white focus:outline-none focus:border-cyan/30"
-              >
-                <option value="nexus-v4-turbo">nexus-v4-turbo (Reversal optimized)</option>
-                <option value="tfe-gpt-4o">tfe-gpt-4o (Deep listening)</option>
-                <option value="pulse-relevance-v1">pulse-relevance-v1 (Low latency)</option>
-              </select>
-              <p className="text-[10px] font-mono text-ghost/40 leading-relaxed">
-                Configures the target linguistic pipeline model used to process social comments and compute sentiments.
-              </p>
             </div>
           </div>
 
-          {/* Right Configuration Column */}
-          <div className="space-y-6">
-            {/* Listening scan intervals */}
-            <div className="space-y-2">
-              <label className="text-xs font-mono text-ghost block flex items-center gap-1.5">
-                <RefreshCw className="h-3.5 w-3.5 text-cyan" />
-                TELEMETRY SCAN MATRIX INTERVAL:
-              </label>
-              <select
-                value={scanInterval}
-                onChange={(e) => setScanInterval(Number(e.target.value))}
-                className="w-full rounded-lg border border-white/10 bg-black py-2.5 px-3 text-xs font-mono text-white focus:outline-none focus:border-cyan/30"
-              >
-                <option value="1">1 second (High priority scan)</option>
-                <option value="3">3 seconds (Standard telemetry)</option>
-                <option value="5">5 seconds (Low bandwidth)</option>
-                <option value="10">10 seconds (Lazy listening)</option>
-              </select>
-              <p className="text-[10px] font-mono text-ghost/40 leading-relaxed">
-                Controls the refresh rate on social listening feeds and simulation log tickers.
-              </p>
-            </div>
-
-            {/* Auditory Warnings toggle */}
-            <div className="flex items-center justify-between border-t border-white/5 pt-5">
-              <div className="space-y-1 pr-4">
-                <span className="text-xs font-mono text-ghost block flex items-center gap-1.5">
-                  <Bell className="h-3.5 w-3.5 text-cyan" />
-                  TACTICAL AUDIO WARNINGS
-                </span>
-                <span className="text-[10px] font-mono text-ghost/40 leading-relaxed block">
-                  Enable warning sound cues during sudden trend burnout anomalies.
-                </span>
-              </div>
-              <button
-                onClick={() => setAudioAlerts(!audioAlerts)}
-                className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-all ${
-                  audioAlerts
-                    ? "bg-cyan/10 border-cyan/30 text-cyan shadow-[0_0_10px_rgba(0,255,255,0.15)]"
-                    : "bg-white/[0.01] border-white/5 text-ghost"
-                }`}
-              >
-                {audioAlerts ? <Volume2 className="h-4.5 w-4.5" /> : <VolumeX className="h-4.5 w-4.5" />}
-              </button>
+          {/* Email Field */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 bg-[#F8F9FD] border border-[#E5E9F0] focus:border-blue-400 focus:bg-white focus:shadow-[0_0_12px_rgba(59,130,246,0.08)] rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all"
+                required
+              />
             </div>
           </div>
-        </div>
+
+          {/* Action Row */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+            {/* Save Changes */}
+            <button
+              type="submit"
+              className="flex-1 h-11 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-[0_4px_16px_rgba(59,130,246,0.15)] active:scale-98"
+            >
+              {isSaved ? (
+                <>
+                  <Check className="h-4 w-4 text-white" />
+                  <span>Changes Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 text-white" />
+                  <span>Save Changes</span>
+                </>
+              )}
+            </button>
+
+            {/* Logout Button */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="h-11 px-6 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-98"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log Out</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

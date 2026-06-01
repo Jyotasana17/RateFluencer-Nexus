@@ -1,177 +1,944 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  AlertTriangle,
+  Search,
+  ArrowRight,
+  Check,
+  Copy,
   Sparkles,
-  Terminal,
-  Cpu,
-  Shield,
-  Compass
+  RefreshCw
 } from "lucide-react";
-import mockTrendsData from "../../mockTrends.json";
-import { useNexusStore } from "@/lib/store";
+
+interface TrendAnalysisResult {
+  trend: string;
+  trendScore: number;
+  trendStatus: "Growing" | "Dying" | "Saturating" | "Decline";
+  trendStatusColor: string;
+  trendStatusBg: string;
+  fatigueScore: number;
+  fatigueStatus: "Saturating" | "Critical" | "Healthy" | "High";
+  fatigueStatusColor: string;
+  fatigueStatusBg: string;
+  growthRate: string;
+  growthRateColor: string;
+  growthRateBg: string;
+  isDying: boolean;
+  shouldUse: boolean;
+  recommendation: string;
+  rationale: string;
+  graphPath: string;
+  graphColor: string;
+  suggestedIdea: string;
+  dataPoints: number[];
+  aiInsightText: string;
+}
+
+const getCurvePath = (points: number[]) => {
+  const width = 450;
+  const height = 140;
+  const paddingLeft = 30;
+  const paddingRight = 10;
+  const paddingTop = 15;
+  const paddingBottom = 20;
+
+  const graphWidth = width - paddingLeft - paddingRight;
+  const graphHeight = height - paddingTop - paddingBottom;
+
+  const coords = points.map((val, idx) => {
+    const x = paddingLeft + (idx / (points.length - 1)) * graphWidth;
+    const y = paddingTop + graphHeight - (val / 100) * graphHeight;
+    return { x, y };
+  });
+
+  let path = `M ${coords[0].x} ${coords[0].y}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const p0 = coords[i];
+    const p1 = coords[i + 1];
+    const cpX1 = p0.x + (p1.x - p0.x) / 2;
+    const cpY1 = p0.y;
+    const cpX2 = p0.x + (p1.x - p0.x) / 2;
+    const cpY2 = p1.y;
+    path += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+  }
+
+  const fillPath = `${path} L ${coords[coords.length - 1].x} ${paddingTop + graphHeight} L ${coords[0].x} ${paddingTop + graphHeight} Z`;
+  return { coords, path, fillPath, height, width, paddingLeft, paddingRight, paddingTop, paddingBottom, graphWidth, graphHeight };
+};
 
 export default function OverviewPage() {
-  const { fatigueThreshold, aiModel, scanInterval } = useNexusStore();
-  
-  // Terminal logs simulation
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    "SYS: System integrity check completed [OK]",
-    "NET: Connected to social listening matrix node #14",
-    "TFE: Deep NLP sentiment processor initialised successfully",
-    "SEC: AES-256 tactical tunnel established on Port 2244"
-  ]);
+  const [trendInput, setTrendInput] = useState("Faceless AI Reels");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisLogs, setAnalysisLogs] = useState<string[]>([]);
+  const [result, setResult] = useState<TrendAnalysisResult | null>({
+    trend: "Faceless AI Reels",
+    trendScore: 24,
+    trendStatus: "Decline",
+    trendStatusColor: "text-rose-600 border-rose-100",
+    trendStatusBg: "bg-rose-50",
+    fatigueScore: 92,
+    fatigueStatus: "Critical",
+    fatigueStatusColor: "text-rose-600 border-rose-100",
+    fatigueStatusBg: "bg-rose-50",
+    growthRate: "-34%",
+    growthRateColor: "text-rose-600 border-rose-100",
+    growthRateBg: "bg-rose-50",
+    isDying: true,
+    shouldUse: false,
+    recommendation: "NO — Avoid this trend.",
+    rationale: "Audiences swipe away instantly when noticing AI-generated faces or clone voiceovers. Transition to real founder building vlogs instead.",
+    graphPath: "M0 5 Q30 8 60 22 T100 28",
+    graphColor: "#3B82F6",
+    suggestedIdea: "Post an unedited screen recording showing the raw logic behind your database pivot, using your real voice.",
+    dataPoints: [95, 88, 70, 52, 41, 30, 24],
+    aiInsightText: "This trend is declining rapidly. Audience fatigue is critical and swiping behavior has peaked. Avoid AI slop and transition immediately to human-centric founder stories."
+  });
+  const [showReplacementBrief, setShowReplacementBrief] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
+  // Feature 4 States for AI Insight Card typing animation
+  const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
+  const [typedInsight, setTypedInsight] = useState("");
+  const [hasGeneratedInsight, setHasGeneratedInsight] = useState(false);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadReport = (res: TrendAnalysisResult) => {
+    const reportText = `==================================================
+TREND FATIGUE ENGINE AI — REPORT DATA
+==================================================
+Trend Target: ${res.trend}
+Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}
+
+KEY TELEMETRY:
+- Trend Score (Engagement): ${res.trendScore}/100 (${res.trendStatus})
+- Fatigue Score (Saturation): ${res.fatigueScore}% (${res.fatigueStatus})
+- Growth Rate (7D Velocity): ${res.growthRate}
+
+AI PREDICTIVE OUTCOME:
+${res.recommendation}
+
+SENTIMENT DIAGNOSIS:
+${res.rationale}
+
+WOW INSIGHT NARRATIVE BRIEF:
+${res.aiInsightText || "This trend is growing fast but will likely saturate in 2-3 weeks."}
+
+SUGGESTED DISRUPTIVE COUNTER-NARRATIVE CONCEPT:
+"${res.suggestedIdea}"
+
+==================================================
+Generated by Trend Fatigue Engine AI. All rights reserved.
+==================================================`;
+
+    const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `TrendReport_${res.trend.replace(/\s+/g, "_")}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleGetInsight = () => {
+    if (!result) return;
+    setIsGeneratingInsight(true);
+    setTypedInsight("");
+    setHasGeneratedInsight(true);
+
+    setTimeout(() => {
+      setIsGeneratingInsight(false);
+      let i = 0;
+      const text = result.aiInsightText || "This trend is growing fast but will likely saturate in 2–3 weeks.";
+      const interval = setInterval(() => {
+        if (i <= text.length) {
+          setTypedInsight(text.slice(0, i));
+          i++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 15);
+    }, 800);
+  };
+
+  const handleAnalyze = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trendInput.trim()) return;
+
+    setIsAnalyzing(true);
+    setResult(null);
+    setShowReplacementBrief(false);
+    setAnalysisLogs([]);
+    
+    // Reset Feature 4 AI Insight States
+    setTypedInsight("");
+    setHasGeneratedInsight(false);
+    setIsGeneratingInsight(false);
+
+    const logSequence = [
+      "Calculating trend growth velocity...",
+      "Measuring audience engagement curves...",
+      "Determining narrative saturation index...",
+      "Converting findings into KPI telemetry..."
+    ];
+
+    let currentStep = 0;
     const interval = setInterval(() => {
-      const logs = [
-        `SCAN: Scanned comment node cluster ${Math.floor(Math.random() * 9000) + 1000}`,
-        `TFE: Recalculated sentiment score on active vector ID: ${Math.random() > 0.5 ? "t1" : "t2"}`,
-        `SYS: CPU load ${Math.floor(Math.random() * 15) + 5}% | Mem Usage 34%`,
-        `NET: Latency to counter-model API: ${Math.floor(Math.random() * 50) + 12}ms`
-      ];
-      const randomLog = logs[Math.floor(Math.random() * logs.length)];
-      setTerminalLogs((prev) => [...prev.slice(-4), randomLog]);
-    }, scanInterval * 1000);
-    return () => clearInterval(interval);
-  }, [scanInterval]);
+      if (currentStep < logSequence.length) {
+        setAnalysisLogs((prev) => [...prev, logSequence[currentStep]]);
+        currentStep++;
+      } else {
+        clearInterval(interval);
+        
+        const query = trendInput.toLowerCase();
+        let targetResult: TrendAnalysisResult;
 
-  const criticalAlertsCount = mockTrendsData.filter(
-    (t) => t.fatigueScore >= fatigueThreshold
-  ).length;
+        if (query.includes("ai") || query.includes("slop") || query.includes("reel") || query.includes("faceless")) {
+          targetResult = {
+            trend: trendInput,
+            trendScore: 24,
+            trendStatus: "Decline",
+            trendStatusColor: "text-rose-600 border-rose-100",
+            trendStatusBg: "bg-rose-50",
+            fatigueScore: 92,
+            fatigueStatus: "Critical",
+            fatigueStatusColor: "text-rose-600 border-rose-100",
+            fatigueStatusBg: "bg-rose-50",
+            growthRate: "-34%",
+            growthRateColor: "text-rose-600 border-rose-100",
+            growthRateBg: "bg-rose-50",
+            isDying: true,
+            shouldUse: false,
+            recommendation: "NO — Avoid this trend.",
+            rationale: "Audiences swipe away instantly when noticing AI-generated faces or clone voiceovers. Transition to real founder building vlogs instead.",
+            graphPath: "M0 5 Q30 8 60 22 T100 28",
+            graphColor: "#3B82F6",
+            suggestedIdea: "Post an unedited screen recording showing the raw logic behind your database pivot, using your real voice.",
+            dataPoints: [95, 88, 70, 52, 41, 30, 24],
+            aiInsightText: "This trend is declining rapidly. Audience fatigue is critical and swiping behavior has peaked. Avoid AI slop and transition immediately to human-centric founder stories."
+          };
+        } else if (query.includes("linkedin") || query.includes("cry") || query.includes("hustle") || query.includes("vulnerability")) {
+          targetResult = {
+            trend: trendInput,
+            trendScore: 38,
+            trendStatus: "Decline",
+            trendStatusColor: "text-rose-600 border-rose-100",
+            trendStatusBg: "bg-rose-50",
+            fatigueScore: 84,
+            fatigueStatus: "High",
+            fatigueStatusColor: "text-rose-600 border-rose-100",
+            fatigueStatusBg: "bg-rose-50",
+            growthRate: "-18%",
+            growthRateColor: "text-rose-600 border-rose-100",
+            growthRateBg: "bg-rose-50",
+            isDying: true,
+            shouldUse: false,
+            recommendation: "NO — Avoid this trend.",
+            rationale: "LinkedIn bragging wrapped in staged vulnerability has reached peak organic backlash. Shift to clean data-backed proof vlogs.",
+            graphPath: "M0 8 Q35 12 70 20 T100 27",
+            graphColor: "#3B82F6",
+            suggestedIdea: "Compile a simple slide show of code fixes and server uptimes with zero emotional overlay.",
+            dataPoints: [78, 71, 62, 53, 47, 42, 38],
+            aiInsightText: "This trend is saturating fast due to vulnerability-backlash. Organic swipe-away rates are high. Shift content to raw metrics or zero-emotional slide guides."
+          };
+        } else if (query.includes("raw") || query.includes("founder") || query.includes("real") || query.includes("vlog") || query.includes("storie")) {
+          targetResult = {
+            trend: trendInput,
+            trendScore: 95,
+            trendStatus: "Growing",
+            trendStatusColor: "text-blue-600 border-blue-100",
+            trendStatusBg: "bg-blue-50",
+            fatigueScore: 18,
+            fatigueStatus: "Healthy",
+            fatigueStatusColor: "text-blue-600 border-blue-100",
+            fatigueStatusBg: "bg-blue-50",
+            growthRate: "+128%",
+            growthRateColor: "text-blue-600 border-blue-100",
+            growthRateBg: "bg-blue-50",
+            isDying: false,
+            shouldUse: true,
+            recommendation: "YES — Ride this wave.",
+            rationale: "Viewers crave authentic behind-the-scenes struggles and practical lessons. Organic reach remains exceptionally strong.",
+            graphPath: "M0 25 Q30 22 60 12 T100 2",
+            graphColor: "#3B82F6",
+            suggestedIdea: "Capture a 30-second unedited clip of your dashboard build pipeline showing direct user growth indices.",
+            dataPoints: [15, 28, 42, 58, 71, 86, 95],
+            aiInsightText: "This trend is growing exponentially with zero narrative fatigue. Creators building raw behind-the-scenes startup struggles are capturing maximum attention velocity."
+          };
+        } else {
+          targetResult = {
+            trend: trendInput,
+            trendScore: 85,
+            trendStatus: "Growing",
+            trendStatusColor: "text-blue-600 border-blue-100",
+            trendStatusBg: "bg-blue-50/80",
+            fatigueScore: 70,
+            fatigueStatus: "Saturating",
+            fatigueStatusColor: "text-blue-600 border-blue-100",
+            fatigueStatusBg: "bg-blue-50/80",
+            growthRate: "+18%",
+            growthRateColor: "text-blue-600 border-blue-100",
+            growthRateBg: "bg-blue-50/80",
+            isDying: false,
+            shouldUse: true,
+            recommendation: "YES — Growth is active, but proceed with caution.",
+            rationale: "Narrative interest remains high, though fatigue is creeping toward saturation at 70%. Inject raw counter-hooks to maximize reach.",
+            graphPath: "M0 16 Q30 8 65 14 T100 10",
+            graphColor: "#3B82F6",
+            suggestedIdea: `Produce a custom segment addressing the sudden rise of "${trendInput}" from an unconventional, highly data-focused angle.`,
+            dataPoints: [30, 48, 55, 68, 74, 82, 85],
+            aiInsightText: "This trend is growing fast but will likely saturate in 2–3 weeks. Capitalize on high organic interest now by injecting custom script hooks before attention velocity declines."
+          };
+        }
+
+        setResult(targetResult);
+        setIsAnalyzing(false);
+      }
+    }, 450);
+  };
+
+  const selectPreset = (preset: string) => {
+    setTrendInput(preset);
+    setIsAnalyzing(true);
+    setResult(null);
+    setShowReplacementBrief(false);
+    setAnalysisLogs(["Calculating trend growth velocity..."]);
+    
+    // Reset Feature 4 AI Insight States
+    setTypedInsight("");
+    setHasGeneratedInsight(false);
+    setIsGeneratingInsight(false);
+
+    setTimeout(() => {
+      setAnalysisLogs((prev) => [...prev, "Measuring audience engagement curves..."]);
+      setTimeout(() => {
+        setAnalysisLogs((prev) => [...prev, "Determining narrative saturation index..."]);
+        setTimeout(() => {
+          setAnalysisLogs((prev) => [...prev, "Converting findings into KPI telemetry..."]);
+          setTimeout(() => {
+            const query = preset.toLowerCase();
+            let targetResult: TrendAnalysisResult;
+            if (query.includes("ai")) {
+              targetResult = {
+                trend: preset,
+                trendScore: 24,
+                trendStatus: "Decline",
+                trendStatusColor: "text-rose-600 border-rose-100",
+                trendStatusBg: "bg-rose-50",
+                fatigueScore: 92,
+                fatigueStatus: "Critical",
+                fatigueStatusColor: "text-rose-600 border-rose-100",
+                fatigueStatusBg: "bg-rose-50",
+                growthRate: "-34%",
+                growthRateColor: "text-rose-600 border-rose-100",
+                growthRateBg: "bg-rose-50",
+                isDying: true,
+                shouldUse: false,
+                recommendation: "NO — Avoid this trend.",
+                rationale: "Audiences swipe away instantly when noticing AI-generated faces or clone voiceovers. Transition to real founder building vlogs instead.",
+                graphPath: "M0 5 Q30 8 60 22 T100 28",
+                graphColor: "#3B82F6",
+                suggestedIdea: "Post an unedited screen recording showing the raw logic behind your database pivot, using your real voice.",
+                dataPoints: [95, 88, 70, 52, 41, 30, 24],
+                aiInsightText: "This trend is declining rapidly. Audience fatigue is critical and swiping behavior has peaked. Avoid AI slop and transition immediately to human-centric founder stories."
+              };
+            } else if (query.includes("linkedin")) {
+              targetResult = {
+                trend: preset,
+                trendScore: 38,
+                trendStatus: "Decline",
+                trendStatusColor: "text-rose-600 border-rose-100",
+                trendStatusBg: "bg-rose-50",
+                fatigueScore: 84,
+                fatigueStatus: "High",
+                fatigueStatusColor: "text-rose-600 border-rose-100",
+                fatigueStatusBg: "bg-rose-50",
+                growthRate: "-18%",
+                growthRateColor: "text-rose-600 border-rose-100",
+                growthRateBg: "bg-rose-50",
+                isDying: true,
+                shouldUse: false,
+                recommendation: "NO — Avoid this trend.",
+                rationale: "LinkedIn bragging wrapped in staged vulnerability has reached peak organic backlash. Shift to clean data-backed proof vlogs.",
+                graphPath: "M0 8 Q35 12 70 20 T100 27",
+                graphColor: "#3B82F6",
+                suggestedIdea: "Compile a simple slide show of code fixes and server uptimes with zero emotional overlay.",
+                dataPoints: [78, 71, 62, 53, 47, 42, 38],
+                aiInsightText: "This trend is saturating fast due to vulnerability-backlash. Organic swipe-away rates are high. Shift content to raw metrics or zero-emotional slide guides."
+              };
+            } else {
+              targetResult = {
+                trend: preset,
+                trendScore: 95,
+                trendStatus: "Growing",
+                trendStatusColor: "text-blue-600 border-blue-100",
+                trendStatusBg: "bg-blue-50",
+                fatigueScore: 18,
+                fatigueStatus: "Healthy",
+                fatigueStatusColor: "text-blue-600 border-blue-100",
+                fatigueStatusBg: "bg-blue-50",
+                growthRate: "+128%",
+                growthRateColor: "text-blue-600 border-blue-100",
+                growthRateBg: "bg-blue-50",
+                isDying: false,
+                shouldUse: true,
+                recommendation: "YES — Ride this wave.",
+                rationale: "Viewers crave authentic behind-the-scenes struggles and practical lessons. Organic reach remains exceptionally strong.",
+                graphPath: "M0 25 Q30 22 60 12 T100 2",
+                graphColor: "#3B82F6",
+                suggestedIdea: "Capture a 30-second unedited clip of your dashboard build pipeline showing direct user growth indices.",
+                dataPoints: [15, 28, 42, 58, 71, 86, 95],
+                aiInsightText: "This trend is growing exponentially with zero narrative fatigue. Creators building raw behind-the-scenes startup struggles are capturing maximum attention velocity."
+              };
+            }
+            setResult(targetResult);
+            setIsAnalyzing(false);
+          }, 150);
+        }, 150);
+      }, 150);
+    }, 150);
+  };
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      {/* Header Title */}
-      <div>
-        <h2 className="text-xl font-bold tracking-tight md:text-2xl uppercase">
-          AI Command Center
+    <div className="max-w-4xl mx-auto space-y-12 text-slate-800 animate-fade-in-up">
+      {/* 🏠 Header Info */}
+      <div className="text-center sm:text-left space-y-1 select-none">
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-tight">
+          Trend Fatigue Radar
         </h2>
-        <p className="text-xs text-ghost">
-          System status dashboard & operational node telemetry.
+        <p className="text-xs text-slate-400 font-semibold">
+          AI-driven analysis isolating narrative saturations, interest fatigue, and counter-growth rates.
         </p>
       </div>
 
-      {/* KPI Widgets */}
-      <div className="grid gap-6 sm:grid-cols-3">
-        {/* Card 1: Active Trends Scanned */}
-        <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 backdrop-blur-md relative overflow-hidden group hover:border-white/10 transition-all duration-300">
-          <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-cyan/[0.01] blur-md pointer-events-none" />
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-wider text-ghost uppercase">
-              Active Trends Scanned
+      {/* ═══════════════════════════════════════════════════════
+          1. TREND INPUT BOX (Large rounded, clean minimal UI)
+          ═══════════════════════════════════════════════════════ */}
+      <div className="bg-white border border-[#E2E8F0] rounded-[32px] p-8 shadow-sm space-y-6 text-center max-w-2xl mx-auto relative overflow-hidden">
+        {/* Soft background blue glow */}
+        <div className="absolute top-0 right-0 h-24 w-24 bg-blue-50/30 rounded-full blur-xl pointer-events-none -z-10" />
+
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block">
+              Trend Exhaustion Engine
             </span>
-            <Compass className="h-4 w-4 text-cyan" />
+            <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+              Is it growing or dying?
+            </h3>
           </div>
-          <div className="text-2xl font-bold tracking-tight md:text-3xl">14,204</div>
-          <div className="mt-2 text-[10px] font-mono text-ghost/50 flex items-center gap-1.5">
-            <span className="text-emerald-500">▲ +12.4%</span> since yesterday
-          </div>
-        </div>
 
-        {/* Card 2: Critical Fatigue Alerts */}
-        <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 backdrop-blur-md relative overflow-hidden group hover:border-white/10 transition-all duration-300">
-          <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-red-500/[0.01] blur-md pointer-events-none" />
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-wider text-ghost uppercase">
-              Critical Fatigue Alerts
-            </span>
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-          </div>
-          <div className="text-2xl font-bold tracking-tight md:text-3xl text-red-500 animate-pulse">
-            {criticalAlertsCount}
-          </div>
-          <div className="mt-2 text-[10px] font-mono text-red-500/70 flex items-center gap-1.5">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
-            Exceeding {fatigueThreshold}% fatigue threshold
-          </div>
-        </div>
-
-        {/* Card 3: Highest Virality Prediction */}
-        <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 backdrop-blur-md relative overflow-hidden group hover:border-white/10 transition-all duration-300">
-          <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-emerald-500/[0.01] blur-md pointer-events-none" />
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-wider text-ghost uppercase">
-              Highest Virality Prediction
-            </span>
-            <Sparkles className="h-4 w-4 text-cyan" />
-          </div>
-          <div className="text-2xl font-bold tracking-tight md:text-3xl text-cyan shadow-[0_0_20px_rgba(0,255,255,0.1)]">
-            96%
-          </div>
-          <div className="mt-2 text-[10px] font-mono text-cyan/70 flex items-center gap-1.5">
-            <span>Counter-narrative advantage:</span> HIGH
-          </div>
-        </div>
-      </div>
-
-      {/* System Terminal Console */}
-      <div className="rounded-xl border border-white/5 bg-black p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-white/5 pb-3">
-          <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-cyan" />
-            <h3 className="text-sm font-bold tracking-tight font-mono">TACTICAL LOG STREAM</h3>
-          </div>
-          <span className="text-[9px] font-mono text-ghost/40">SECURE CONSOLE LINK ACTIVE</span>
-        </div>
-
-        <div className="space-y-2 font-mono text-xs">
-          {terminalLogs.map((log, index) => (
-            <div key={index} className="flex gap-3 text-ghost/90 hover:text-white transition-colors duration-200">
-              <span className="text-cyan/60 font-semibold select-none">&gt;&gt;</span>
-              <span>{log}</span>
+          <form onSubmit={handleAnalyze} className="relative flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Enter a trend (e.g. AI reels, faceless videos)..."
+                value={trendInput}
+                onChange={(e) => setTrendInput(e.target.value)}
+                className="w-full h-12 pl-10 pr-4 bg-[#F8F9FD] border border-[#E5E9F0] focus:border-blue-400 focus:bg-white focus:shadow-[0_0_12px_rgba(59,130,246,0.08)] rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all"
+                disabled={isAnalyzing}
+                required
+              />
             </div>
+            <button
+              type="submit"
+              disabled={isAnalyzing}
+              className="h-12 px-6 bg-blue-600 hover:bg-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] text-white font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all duration-200 active:scale-95 disabled:opacity-50 shrink-0"
+            >
+              {isAnalyzing ? (
+                <>
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  <span>Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <span>Analyze</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Suggested presets */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-2 border-t border-slate-50">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Suggested:</span>
+          {["Faceless AI Reels", "LinkedIn Hustle Posts", "Raw Founder Stories"].map((preset) => (
+            <button
+              key={preset}
+              onClick={() => selectPreset(preset)}
+              disabled={isAnalyzing}
+              className="text-[9px] font-bold text-slate-500 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 border border-slate-200/50 hover:border-blue-150 rounded-lg px-2 py-1 transition-all"
+            >
+              {preset}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Diagnostic details panel */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Left diagnostic */}
-        <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 space-y-4">
-          <h3 className="text-sm font-bold tracking-tight flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-cyan" />
-            AI MODEL STATUS
-          </h3>
-          <div className="space-y-3 font-mono text-xs">
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-ghost/60">ACTIVE ENGINE:</span>
-              <span className="text-cyan">{aiModel.toUpperCase()}</span>
-            </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-ghost/60">SCAN MATRIX INTERVAL:</span>
-              <span>{scanInterval} SECONDS</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-ghost/60">INTELLIGENCE SYNC:</span>
-              <span className="text-emerald-500">100% ONLINE</span>
+      {/* 🧠 AI ANALYZING LOADER */}
+      {isAnalyzing && (
+        <div className="bg-white border border-blue-50 rounded-[32px] p-8 text-center space-y-4 shadow-sm max-w-2xl mx-auto animate-radar">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 animate-spin">
+            <RefreshCw className="h-4.5 w-4.5" />
+          </div>
+          <div className="space-y-1.5 max-w-xs mx-auto">
+            <span className="text-xs font-bold text-slate-900 block">AI Calibrating narrative curves...</span>
+            <div className="space-y-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              {analysisLogs.map((log, index) => (
+                <div key={index} className="flex justify-center gap-1">
+                  <span className="text-blue-500">&gt;</span>
+                  <span>{log}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+      )}
 
-        {/* Right diagnostic */}
-        <div className="rounded-xl border border-white/5 bg-[#0A0A0A]/50 p-6 space-y-4">
-          <h3 className="text-sm font-bold tracking-tight flex items-center gap-2">
-            <Shield className="h-4 w-4 text-cyan" />
-            THREAT SECURITY
-          </h3>
-          <div className="space-y-3 font-mono text-xs">
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-ghost/60">SSL NODE HANDSHAKE:</span>
-              <span className="text-emerald-500">SECURE</span>
+      {/* ═══════════════════════════════════════════════════════
+          2. FEATURE 2 — RESULT CARDS (Three highly polished light KPI Cards)
+          ═══════════════════════════════════════════════════════ */}
+      {result && (
+        <div className="space-y-6 animate-fade-in-up">
+          {/* Header block with Download Report button (Feature 8) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-[#E2E8F0] rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] relative overflow-hidden">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block">Narrative Analysis Success</span>
+              <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-1.5 leading-none">
+                <span>Active Query:</span>
+                <span className="text-blue-600 font-extrabold">&ldquo;{result.trend}&rdquo;</span>
+              </h3>
             </div>
-            <div className="flex justify-between border-b border-white/5 pb-1">
-              <span className="text-ghost/60">SECURE SHELL AGENT:</span>
-              <span>PORT 2244</span>
+            
+            {/* Download Report Button */}
+            <button
+              onClick={() => handleDownloadReport(result)}
+              className="h-10 px-5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all hover:shadow-[0_4px_16px_rgba(59,130,246,0.18)] duration-200 active:scale-98"
+            >
+              <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              <span>Download Report</span>
+            </button>
+          </div>
+
+          {/* KPI Cards Row (Grid 3 columns) */}
+          <div className="grid gap-6 sm:grid-cols-3">
+            
+            {/* Card 1: Trend Score */}
+            <div className="bg-white border border-[#E2E8F0] rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(59,130,246,0.06)] hover:border-blue-200 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between">
+              {/* Subtle top-right blue glow */}
+              <div className="absolute top-0 right-0 h-16 w-16 bg-blue-50/50 rounded-full blur-lg pointer-events-none -z-10 group-hover:bg-blue-100/50 transition-colors" />
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base select-none">🔥</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Trend Score
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider group-hover:bg-blue-100 transition-all">
+                    Engagement
+                  </span>
+                </div>
+                
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4.5xl font-black text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">
+                    {result.trendScore}
+                  </span>
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider leading-none bg-blue-50 text-blue-600 border-blue-100`}
+                  >
+                    {result.trendStatus}
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-[9px] font-semibold text-slate-400 mt-6 pt-3 border-t border-slate-100 block uppercase tracking-wide leading-none">
+                Organic interest levels
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-ghost/60">IP TUNNEL OVERLAY:</span>
-              <span>10.197.184.7</span>
+
+            {/* Card 2: Fatigue Score (Feature 5 - Circular Progress Indicator) */}
+            <div className="bg-white border border-[#E2E8F0] rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(59,130,246,0.06)] hover:border-blue-200 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between">
+              {/* Subtle top-right blue glow */}
+              <div className="absolute top-0 right-0 h-16 w-16 bg-blue-50/50 rounded-full blur-lg pointer-events-none -z-10 group-hover:bg-blue-100/50 transition-colors" />
+
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base select-none">⚠️</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Fatigue Score
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider group-hover:bg-blue-100 transition-all">
+                    Our USP
+                  </span>
+                </div>
+
+                {/* Flex layout for Info vs Circular Progress */}
+                <div className="flex items-center justify-between gap-4 pt-1">
+                  {/* Left information */}
+                  <div className="space-y-2.5">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Metrics Status</span>
+                      <span className="text-xs font-extrabold text-slate-800 leading-tight block">
+                        Fatigue: <span className="text-blue-600 font-black">{result.fatigueScore}%</span> → <span className="underline decoration-blue-200 underline-offset-4">{result.fatigueStatus}</span>
+                      </span>
+                    </div>
+
+                    {/* Based on items list */}
+                    <div className="space-y-1 select-none">
+                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Based on:</span>
+                      <div className="flex flex-col gap-0.5 text-[9px] font-semibold text-slate-500">
+                        <div className="flex items-center gap-1">
+                          <span className="text-blue-500">📉</span>
+                          <span>Trend decline</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-blue-500">📊</span>
+                          <span>Overuse</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-blue-500">⏱️</span>
+                          <span>Time variables</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right side circular progress SVG */}
+                  <div className="relative shrink-0 flex items-center justify-center h-20 w-20">
+                    {(() => {
+                      const radius = 26;
+                      const strokeWidth = 5.5;
+                      const circumference = 2 * Math.PI * radius;
+                      const strokeDashoffset = circumference - (result.fatigueScore / 100) * circumference;
+                      return (
+                        <svg className="w-full h-full transform -rotate-90 overflow-visible" viewBox="0 0 64 64">
+                          <defs>
+                            <linearGradient id="fatigueGradient" x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stopColor="#3B82F6" />
+                              <stop offset="100%" stopColor="#60A5FA" />
+                            </linearGradient>
+                          </defs>
+                          
+                          {/* Track circle */}
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r={radius}
+                            fill="none"
+                            stroke="#F1F5F9"
+                            strokeWidth={strokeWidth}
+                          />
+
+                          {/* Dynamic Progress Circle */}
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r={radius}
+                            fill="none"
+                            stroke="url(#fatigueGradient)"
+                            strokeWidth={strokeWidth}
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-out"
+                          />
+                          
+                          {/* Text score centered */}
+                          <g className="transform rotate-90" style={{ transformOrigin: "32px 32px" }}>
+                            <text
+                              x="32"
+                              y="35"
+                              textAnchor="middle"
+                              className="text-xs font-black text-slate-800 tracking-tight"
+                            >
+                              {result.fatigueScore}%
+                            </text>
+                          </g>
+                        </svg>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-[9px] font-semibold text-slate-400 mt-6 pt-3 border-t border-slate-100 block uppercase tracking-wide leading-none">
+                Score determined out of 0–100 index
+              </div>
+            </div>
+
+            {/* Card 3: Growth */}
+            <div className="bg-white border border-[#E2E8F0] rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(59,130,246,0.06)] hover:border-blue-200 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between">
+              {/* Subtle top-right blue glow */}
+              <div className="absolute top-0 right-0 h-16 w-16 bg-blue-50/50 rounded-full blur-lg pointer-events-none -z-10 group-hover:bg-blue-100/50 transition-colors" />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base select-none">📈</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Growth
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider group-hover:bg-blue-100 transition-all">
+                    Trend Growth
+                  </span>
+                </div>
+                
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className="text-4.5xl font-black text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors"
+                  >
+                    {result.growthRate}
+                  </span>
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider leading-none bg-blue-50 text-blue-600 border-blue-100`}
+                  >
+                    Velocity
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-[9px] font-semibold text-slate-400 mt-6 pt-3 border-t border-slate-100 block uppercase tracking-wide leading-none">
+                7-Day attention growth
+              </div>
             </div>
           </div>
+
+          {/* Simple Graph & AI Recommendation Section */}
+          <div className="grid gap-6 sm:grid-cols-2">
+            
+            {/* Trend over time Line Chart (Feature 3) */}
+            <div className="bg-white border border-[#E2E8F0] rounded-[30px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-5 flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base select-none">📈</span>
+                  <span className="text-xs font-extrabold text-slate-900 tracking-tight uppercase leading-none">
+                    Trend over time
+                  </span>
+                </div>
+                <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                  Live Telemetry
+                </span>
+              </div>
+
+              {/* Minimal Line Chart Canvas */}
+              <div className="h-32 flex items-center justify-center relative w-full overflow-hidden">
+                {(() => {
+                  const points = result.dataPoints || [30, 48, 55, 68, 74, 82, 85];
+                  const { coords, path, fillPath, width, height } = getCurvePath(points);
+                  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                  return (
+                    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
+                      <defs>
+                        <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.12" />
+                          <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.00" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Minimal interior grid lines */}
+                      <line x1="30" y1="41.25" x2={width - 10} y2="41.25" stroke="#F8FAFC" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="30" y1="67.5" x2={width - 10} y2="67.5" stroke="#F1F5F9" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1="30" y1="93.75" x2={width - 10} y2="93.75" stroke="#F8FAFC" strokeWidth="1" strokeDasharray="3 3" />
+
+                      {/* Y-axis labels */}
+                      <text x="8" y="44" className="text-[8px] font-bold text-slate-300 select-none">75</text>
+                      <text x="8" y="70" className="text-[8px] font-bold text-slate-300 select-none">50</text>
+                      <text x="8" y="97" className="text-[8px] font-bold text-slate-300 select-none">25</text>
+
+                      {/* X-axis labels */}
+                      {coords.map((c, idx) => (
+                        <text
+                          key={idx}
+                          x={c.x}
+                          y="135"
+                          textAnchor="middle"
+                          className="text-[8px] font-bold text-slate-400 select-none uppercase tracking-wide"
+                        >
+                          {days[idx]}
+                        </text>
+                      ))}
+
+                      {/* Gradient Area under the curve */}
+                      <path d={fillPath} fill="url(#blueGradient)" />
+
+                      {/* Smooth Blue Line Chart */}
+                      <path
+                        d={path}
+                        fill="none"
+                        stroke="#3B82F6"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      {/* Circle nodes for data points */}
+                      {coords.map((c, idx) => {
+                        const isLast = idx === coords.length - 1;
+                        return (
+                          <g key={idx} className="group">
+                            {/* Glow effect on hover */}
+                            <circle
+                              cx={c.x}
+                              cy={c.y}
+                              r="8"
+                              fill="#3B82F6"
+                              fillOpacity="0"
+                              className="hover:fill-opacity-10 transition-all duration-200 cursor-pointer"
+                            />
+                            {/* Main node dot */}
+                            <circle
+                              cx={c.x}
+                              cy={c.y}
+                              r={isLast ? "4.5" : "3.5"}
+                              fill={isLast ? "#3B82F6" : "#FFFFFF"}
+                              stroke="#3B82F6"
+                              strokeWidth="2.5"
+                              className="transition-all duration-200"
+                            />
+                            {isLast && (
+                              <circle
+                                cx={c.x}
+                                cy={c.y}
+                                r="8"
+                                fill="none"
+                                stroke="#3B82F6"
+                                strokeWidth="1.5"
+                                className="animate-ping"
+                                style={{ transformOrigin: `${c.x}px ${c.y}px` }}
+                              />
+                            )}
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
+              </div>
+
+              <span className="text-[9px] font-semibold text-slate-400 block text-center uppercase tracking-wide leading-none">
+                Attention telemetry (Last 7 Days)
+              </span>
+            </div>
+
+            {/* AI Insight Card (Feature 4 - WOW Feature) */}
+            <div className="bg-white border border-[#E2E8F0] rounded-[30px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between space-y-4">
+              <div className="space-y-4 flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base select-none">🤖</span>
+                    <span className="text-xs font-extrabold text-slate-900 uppercase tracking-tight">
+                      AI Insight Engine
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-blue-500 bg-blue-50/50 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                    Wow Feature
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-slate-400 uppercase block tracking-wider leading-none">AI Narrative Analysis</span>
+                </div>
+
+                {/* Output text box */}
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 min-h-[96px] flex items-center justify-center relative overflow-hidden transition-all">
+                  {!hasGeneratedInsight && !isGeneratingInsight && (
+                    <p className="text-xs font-medium text-slate-400 text-center leading-relaxed max-w-xs">
+                      Ready to synthesize narrative curves. Click &quot;Get AI Insight&quot; below to trigger structural prediction.
+                    </p>
+                  )}
+
+                  {isGeneratingInsight && (
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <RefreshCw className="h-4 w-4 text-blue-600 animate-spin" />
+                      <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest animate-pulse">Scanning trend data...</span>
+                    </div>
+                  )}
+
+                  {hasGeneratedInsight && !isGeneratingInsight && (
+                    <p className="text-xs font-semibold text-slate-700 leading-relaxed w-full text-left font-mono">
+                      {typedInsight}
+                      {typedInsight.length < (result.aiInsightText || "This trend is growing fast but will likely saturate in 2–3 weeks.").length && (
+                        <span className="inline-block w-1.5 h-3.5 bg-blue-600 animate-pulse ml-1" />
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Get AI Insight Button & Formulation link */}
+              <div className="space-y-2 pt-3 border-t border-slate-100">
+                <button
+                  onClick={handleGetInsight}
+                  disabled={isGeneratingInsight}
+                  className="w-full h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-[0_4px_16px_rgba(59,130,246,0.18)] duration-200 active:scale-98"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Get AI Insight</span>
+                </button>
+
+                {hasGeneratedInsight && !isGeneratingInsight && (
+                  <button
+                    onClick={() => setShowReplacementBrief(!showReplacementBrief)}
+                    className="w-full h-9 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    <span>{showReplacementBrief ? "Hide Script Concept" : "Formulate Replacement Script"}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive brief popup */}
+          {showReplacementBrief && (
+            <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 space-y-4 animate-fade-in-up">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">
+                  Disruptive Counter-Narrative Concept
+                </span>
+                <button
+                  onClick={() => copyToClipboard(result.suggestedIdea)}
+                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span>Copy Concept</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-sm font-serif italic text-indigo-100 leading-relaxed">
+                &ldquo;{result.suggestedIdea}&rdquo;
+              </p>
+              <div className="text-[9px] font-semibold text-slate-500 pt-2 block border-t border-slate-800">
+                Use your real voice and unedited screen footage for maximum conversion.
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

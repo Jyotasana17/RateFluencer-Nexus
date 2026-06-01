@@ -1,24 +1,28 @@
 import {
-  Bot,
-  BrainCircuit,
-  Compass,
   Home,
-  Orbit,
   Radar,
+  Compass,
+  Dna,
+  Target,
+  Flame,
+  LineChart,
+  Bot,
+  Settings,
   Sparkles,
+  BrainCircuit,
   WandSparkles,
-  Skull,
-  TrendingUp,
-  Settings
+  Orbit
 } from "lucide-react";
 
 export const navItems = [
-  { label: "Home", href: "/dashboard", icon: Home },
-  { label: "Fatigue Radar", href: "/dashboard/fatigue-radar", icon: Skull },
-  { label: "Stock Market", href: "/dashboard/stock-market", icon: TrendingUp },
-  { label: "Discovery", href: "/dashboard/discovery", icon: Compass },
-  { label: "DNA", href: "/dashboard/dna", icon: Radar },
-  { label: "Campaign Lab", href: "/dashboard/campaign-lab", icon: Orbit },
+  { label: "Dashboard", href: "/dashboard", icon: Home },
+  { label: "Fatigue Radar", href: "/dashboard/fatigue-radar", icon: Radar },
+  { label: "Creator Discovery", href: "/dashboard/discovery", icon: Compass },
+  { label: "Influence DNA", href: "/dashboard/dna", icon: Dna },
+  { label: "Campaign Lab", href: "/dashboard/campaign-lab", icon: Target },
+  { label: "Content Studio", href: "/dashboard/content-lab", icon: Flame },
+  { label: "Predictive Analytics", href: "/dashboard/analytics", icon: LineChart },
+  { label: "Autonomous Agent", href: "/dashboard/ai-agent", icon: Bot },
   { label: "Settings", href: "/dashboard/settings", icon: Settings }
 ];
 

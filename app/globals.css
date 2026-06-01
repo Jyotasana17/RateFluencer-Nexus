@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  --font-inter: "Inter", "SF Pro Display", "Segoe UI", Arial, sans-serif;
+  color-scheme: light;
+  --font-inter: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 * {
@@ -13,114 +13,81 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #FAFAFB;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: #050816;
-  color: #fff;
+  background-color: #FCFCFD;
+  color: #1E293B;
+  font-family: var(--font-inter);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 body::selection {
-  background: rgba(0, 229, 255, 0.35);
+  background: rgba(99, 102, 241, 0.15);
+  color: #4F46E5;
 }
 
-.mesh-bg {
-  background:
-    linear-gradient(115deg, rgba(109, 93, 252, 0.2), transparent 34%),
-    radial-gradient(circle at 78% 20%, rgba(0, 229, 255, 0.18), transparent 24%),
-    radial-gradient(circle at 32% 72%, rgba(20, 241, 149, 0.13), transparent 24%),
-    linear-gradient(180deg, #050816 0%, #0a1022 46%, #050816 100%);
+/* Apple-style smooth scroll reveal utilities */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.045));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 70px rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(22px);
+.scroll-reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.panel-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size: 38px 38px;
+/* Clean Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-.text-gradient {
-  background: linear-gradient(90deg, #fff 8%, #cbd5e1 36%, #00e5ff 67%, #14f195 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-.text-gradient-neon {
-  background: linear-gradient(135deg, #00a3ff 0%, #00e5ff 50%, #6dd5fa 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.glass-card {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(5, 8, 22, 0.95));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 48px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(16px);
-}
-
-.noise {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.08;
-  z-index: 60;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-}
-
-.scanline {
-  position: relative;
-  overflow: hidden;
-}
-
-.scanline::after {
-  content: "";
-  position: absolute;
-  inset: -120% 0 auto;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.12), transparent);
-  animation: scan 5s linear infinite;
-}
-
-@keyframes scan {
+@keyframes fadeInUp {
   from {
-    transform: translateY(-45%);
+    opacity: 0;
+    transform: translateY(16px);
   }
   to {
-    transform: translateY(165%);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Scroll reveal animations */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.reveal-on-scroll.revealed {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
+/* Micro-loading animation */
+@keyframes pulseRadar {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
   }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+.animate-radar {
+  animation: pulseRadar 2s ease-in-out infinite;
 }

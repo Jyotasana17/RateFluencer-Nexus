@@ -26,7 +26,7 @@ export const useNexusStore = create<NexusState>((set) => ({
   setGoal: (goal) => set({ goal }),
 
   // Settings initial states
-  isAuthenticated: false,
+  isAuthenticated: true,
   setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
   fatigueThreshold: 80,
   setFatigueThreshold: (val) => set({ fatigueThreshold: val }),

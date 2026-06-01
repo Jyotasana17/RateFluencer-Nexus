@@ -11,6 +11,11 @@ type Node = {
   size: number;
 };
 
+function seededRandom(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
 function InfluenceGraph({ compact = false }: { compact?: boolean }) {
   const group = useRef<THREE.Group>(null);
   const nodes = useMemo<Node[]>(() => {
@@ -100,10 +105,10 @@ function GalaxyStars() {
       const arm = i % 5;
       const angle = i * 0.08 + arm * 1.26;
       const radius = Math.sqrt(i / 1400) * 8.5;
-      const spread = (Math.random() - 0.5) * 0.72;
+      const spread = (seededRandom(i + 1) - 0.5) * 0.72;
       positions.push(
         Math.cos(angle) * radius + spread,
-        (Math.random() - 0.5) * 0.7,
+        (seededRandom(i + 1401) - 0.5) * 0.7,
         Math.sin(angle) * radius + spread
       );
       const color = new THREE.Color(palette[i % palette.length]);
