@@ -134,8 +134,8 @@ This repository contains a pre-configured `netlify.toml` file. To deploy:
 
 ---
 
-## 👥 Meet Team Sparks
-*   **Team Name:** Sparks
+## 👥 Meet Team Mavens
+*   **Team Name:** Mavens
 *   **Team Members:**
     1.  **Jyotasana**
     2.  **Arpita Matta**
@@ -144,4 +144,4 @@ This repository contains a pre-configured `netlify.toml` file. To deploy:
 ---
 
 ## 📄 License
-Copyright © 2026 RateFluencer Nexus (Sparks Team). All rights reserved. Built with passion by Jyotasana, Arpita Matta, and Anand Minejes.
+Copyright © 2026 RateFluencer Nexus (Team Mavens). All rights reserved. Built with passion by Jyotasana, Arpita Matta, and Anand Minejes.
