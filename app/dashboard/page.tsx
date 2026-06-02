@@ -601,9 +601,9 @@ export default function AdminDashboardPage() {
             <div className="flex-1 w-full space-y-2">
               <button 
                 onClick={() => triggerToast("Strategized angle deployed! Initializing script compiler...")}
-                className="w-full h-11 bg-[#AEF597] hover:bg-[#A8F690] text-slate-955 font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-[0_0_12px_rgba(174,245,151,0.3)] flex items-center justify-center gap-2"
+                className="w-full h-11 bg-[#AEF597] hover:bg-[#A8F690] text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-[0_0_12px_rgba(174,245,151,0.3)] flex items-center justify-center gap-2"
               >
-                <Rocket className="w-3.5 h-3.5 fill-slate-950 text-slate-955 animate-pulse" />
+                <Rocket className="w-3.5 h-3.5 fill-slate-950 text-slate-955" />
                 <span>DEPLOY RIZZ TO CONTENT STUDIO</span>
               </button>
               
@@ -790,7 +790,7 @@ export default function AdminDashboardPage() {
             <button 
               onClick={startTelemetryCalibrator}
               disabled={isCalibrating}
-              className="w-full h-8 bg-brand-gradient hover:shadow-button-glow text-slate-955 font-black rounded-lg text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 disabled:opacity-50 transition-all duration-250 active:scale-95 shrink-0"
+              className="w-full h-8 bg-brand-gradient hover:shadow-button-glow text-slate-950 font-black rounded-lg text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 disabled:opacity-50 transition-all duration-250 active:scale-95 shrink-0"
             >
               <span>DIAGNOSE VIBE</span>
               <span className="text-[10px]">→</span>

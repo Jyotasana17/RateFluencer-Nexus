@@ -254,6 +254,7 @@ export default function FatigueRadarPage() {
                 placeholder="FILTER ACTIVE SATURATED VECTORS..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                suppressHydrationWarning={true}
                 className="w-full rounded-xl border border-white/5 bg-[#0A0A0A] py-2.5 pr-4 pl-10 text-xs font-bold text-white placeholder-white/20 focus:border-[#AEF597]/40 focus:outline-none focus:shadow-[0_0_12px_rgba(174,245,151,0.06)] transition-all uppercase"
               />
             </div>
@@ -264,10 +265,12 @@ export default function FatigueRadarPage() {
                 placeholder="ANALYZE CUSTOM WAVE..."
                 value={customTrend}
                 onChange={(e) => setCustomTrend(e.target.value)}
+                suppressHydrationWarning={true}
                 className="min-w-[200px] rounded-xl border border-white/5 bg-[#0A0A0A] px-4 py-2.5 text-xs font-bold text-white placeholder-white/20 focus:border-[#AEF597]/40 focus:outline-none focus:shadow-[0_0_12px_rgba(174,245,151,0.06)] transition-all uppercase"
               />
               <button
                 type="submit"
+                suppressHydrationWarning={true}
                 className="flex items-center gap-1.5 rounded-xl bg-brand-gradient hover:shadow-button-glow px-4 py-2.5 text-xs font-black text-slate-950 transition-all active:scale-95 shrink-0"
               >
                 <Cpu className="h-3.5 w-3.5 text-slate-950 animate-pulse" />
@@ -483,6 +486,7 @@ export default function FatigueRadarPage() {
                           </span>
                           <button
                             onClick={() => copyToClipboard(hook, `${selectedTrend.id}_h_${i}`)}
+                            suppressHydrationWarning={true}
                             className="rounded-lg p-1 text-[#6B7280] hover:text-[#AEF597] hover:bg-white/5 transition-all shrink-0"
                             title="Copy hook to clipboard"
                           >
@@ -519,7 +523,8 @@ export default function FatigueRadarPage() {
                   ) : (
                     <button
                       onClick={triggerReversalGeneration}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-gradient hover:shadow-button-glow py-3 text-xs font-black text-slate-955 shadow-sm transition-all active:scale-95 shrink-0"
+                      suppressHydrationWarning={true}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-gradient hover:shadow-button-glow py-3 text-xs font-black text-slate-950 shadow-sm transition-all active:scale-95 shrink-0"
                     >
                       <Cpu className="h-4 w-4 text-slate-950 animate-pulse" />
                       <span>RECALIBRATE LLM TELEMETRY LOGS</span>

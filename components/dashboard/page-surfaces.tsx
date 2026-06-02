@@ -511,7 +511,7 @@ export function DnaProfilePage() {
             className={cn(
               "text-[10px] font-black px-4 py-2.5 rounded-xl border transition-all duration-150 uppercase tracking-wider font-mono",
               activeCreator === name
-                ? "bg-[#AEF597] border-[#AEF597] text-slate-955 shadow-[0_0_12px_rgba(174,245,151,0.2)] font-black"
+                ? "bg-[#AEF597] border-[#AEF597] text-slate-950 shadow-[0_0_12px_rgba(174,245,151,0.2)] font-black"
                 : "bg-black/40 border-white/5 text-[#6B7280] hover:text-white hover:bg-white/[0.01]"
             )}
           >
@@ -869,7 +869,7 @@ export function ContentLabPage() {
           disabled={isCooking || !topicInput.trim()}
           className="h-12 flex items-center justify-center gap-2 rounded-xl bg-brand-gradient hover:shadow-button-glow px-6 text-xs font-black text-slate-950 transition-all active:scale-95 disabled:opacity-50 shrink-0 self-end"
         >
-          <Flame className="h-4 w-4 text-slate-955 animate-pulse" />
+          <Flame className="h-4 w-4 text-slate-950 animate-pulse" />
           <span>{isCooking ? "COMPILING..." : "COOK ASSETS"}</span>
         </button>
       </form>
@@ -911,7 +911,7 @@ export function ContentLabPage() {
                       "mb-4 flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-300",
                       isActive
                         ? "bg-[#AEF597] border-[#AEF597] text-slate-950"
-                        : "bg-black/60 border border-white/5 text-[#AEF597] group-hover:bg-[#AEF597] group-hover:border-[#AEF597] group-hover:text-slate-955"
+                        : "bg-black/60 border border-white/5 text-[#AEF597] group-hover:bg-[#AEF597] group-hover:border-[#AEF597] group-hover:text-slate-950"
                     )}
                   >
                     <Icon className="h-4.5 w-4.5" />
@@ -1169,25 +1169,27 @@ export function AIAgentPage() {
       return `========================================
 [ NEXUS AI CREATIVE BRIEF // NICHE SNIPER ]
 ========================================
-TARGET saturated TREND: Faceless AI Motivational Reels
-FATIGUE HORIZON: 94.2% (Burnout reached)
-ALTERNATIVE OPPORTUNITY WAVE: Raw, unedited founder build-in-public logs.
-GEN Z CORE Pivot DIRECTION: Stop performative slop. Viewers swipe away instantly upon seeing stock images and robotic voices. Focus on real code margins, messy coding desks, and authentic failure readouts.
-EXPECTED CONVERSIONS LIFT: +148% CTR recovery within 72 hours.
+TARGET saturated TREND: Faceless AI Motivational Reels (Total slop, stans are swiping immediately)
+FATIGUE LEVEL: 94.2% (Honestly cooked, burnout reached)
+THE ALTERNATIVE PIVOT (Lowkey based):
+Raw, unedited builder-in-public logs. Messy desks, server crashes, and coffee spills.
+GEN Z VIBE ACTION:
+Stop performative slop. Viewers swipe away instantly upon seeing stock images and robotic voices. Focus on real code margins and authentic failure readouts. Main character energy only. No cap.
+EXPECTED W: +148% CTR recovery within 72 hours. Ate and left no crumbs.
 ========================================`;
     }
     if (agentType === "alchemist") {
       return `========================================
 [ NEXUS AI CREATIVE BRIEF // SCRIPT ALCHEMIST ]
 ========================================
-TARGET saturated TREND: Performative "5AM Hustle Routines"
-DISRUPTIVE NARRATIVE OPENER:
+TARGET saturated TREND: Performative "5AM Hustle Routines" (Extremely mid)
+THE UNHINGED REVERSAL HOOK:
 “Stop waking up at 5AM just to film aesthetic coffee loops. The algorithm is sick of it, and so are your stans. Here is the messy late-night engineering log that actually built our app...”
-AUDIO FLOW TIMING SKELETON:
-- 0-3s: Loud pattern interrupt (throw coffee away)
-- 4-12s: Show terminal code logs and raw server analytics
-- 13-22s: Call out the performative morning routine influencers
-- 23-30s: Prompt stans to active-save the tutorial
+TIMING SKELETON (No cap flow):
+- 0-3s: Loud pattern interrupt (literally throw coffee away, startle the viewer)
+- 4-12s: Flash raw console logs and server crashes. Absolute chaos.
+- 13-22s: Call out the aesthetic creators for posting absolute mid routines.
+- 23-30s: Tell stans to active-save for developer code rizz.
 ========================================`;
     }
     
@@ -1195,12 +1197,14 @@ AUDIO FLOW TIMING SKELETON:
     return `========================================
 [ NEXUS AI CREATIVE BRIEF // VISUAL STRATEGIST ]
 ========================================
-TARGET saturated TREND: Clean Pastel Minimalism
-CONTRAST COLOR SCHEME: Carbon Dark mesh + Neon Lime (#AEF597) wireframe lines.
-THUMBNAIL typography GUIDELINES:
-Thin monospace font overlays reading "[DECRYPTED]" or "[PROOF OF WORK]". Absolute ban on shock faces or high-saturation red arrows.
-PUBLISHING WINDOW ACCELERATION:
-Deploy videos on Monday and Wednesday at exactly 6:45 PM. Velocity tracking maps a major organic reach gap in that specific time gate.
+TARGET saturated TREND: Clean Pastel Minimalism (Aesthetically mid)
+REVERSED VISUALS:
+Carbon Dark mesh + Neon Lime (#AEF597) wireframe lines. Cyberpunk-coded.
+THUMBNAIL DESIGN (Anti-slop rules):
+Thin monospace overlays reading "[DECRYPTED]" or "[PROOF OF WORK]".
+Absolutely ban shock faces, red arrows, or generic pastel. Pure hacker aesthetic.
+OPTIMAL PUBLISHING WINDOWS:
+Post Mon & Wed at 6:45 PM. Peak scrolling window. Go viral or go home.
 ========================================`;
   };
 
@@ -1254,7 +1258,7 @@ Deploy videos on Monday and Wednesday at exactly 6:45 PM. Velocity tracking maps
               className={cn(
                 "text-[10px] font-black px-4 py-2.5 rounded-xl border transition-all duration-150 uppercase tracking-wider font-mono",
                 agentType === agent.id
-                  ? "bg-[#AEF597] border-[#AEF597] text-slate-955 shadow-[0_0_12px_rgba(174,245,151,0.2)] font-black"
+                  ? "bg-[#AEF597] border-[#AEF597] text-slate-950 shadow-[0_0_12px_rgba(174,245,151,0.2)] font-black"
                   : "bg-black/60 border-white/5 text-[#6B7280] hover:text-white hover:bg-white/[0.01]"
               )}
             >
@@ -1278,7 +1282,7 @@ Deploy videos on Monday and Wednesday at exactly 6:45 PM. Velocity tracking maps
               <button
                 onClick={runAgentJob}
                 disabled={isRunning}
-                className="px-4 py-2 bg-brand-gradient text-slate-955 font-black rounded-xl text-[10px] uppercase tracking-wider transition-all shadow-sm duration-200 active:scale-95 shrink-0 flex items-center gap-1.5"
+                className="px-4 py-2 bg-brand-gradient text-slate-950 font-black rounded-xl text-[10px] uppercase tracking-wider transition-all shadow-sm duration-200 active:scale-95 shrink-0 flex items-center gap-1.5"
               >
                 <Play className="h-3 w-3 fill-current text-slate-955" />
                 <span>{isRunning ? "Calibrating..." : "Launch Agent Pipeline"}</span>
@@ -1304,9 +1308,9 @@ Deploy videos on Monday and Wednesday at exactly 6:45 PM. Velocity tracking maps
                       className={cn(
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-[10px] font-black transition-all font-mono mt-0.5",
                         isStepActive
-                          ? "bg-[#AEF597] border-[#AEF597] text-slate-955 animate-pulse"
+                          ? "bg-[#AEF597] border-[#AEF597] text-slate-950 animate-pulse"
                           : isStepCompleted
-                          ? "bg-emerald-400 border-emerald-400 text-slate-955"
+                          ? "bg-emerald-400 border-emerald-400 text-slate-950"
                           : "bg-white/5 border border-white/10 text-[#6B7280]"
                       )}
                     >

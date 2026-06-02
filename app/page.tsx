@@ -24,7 +24,7 @@ import {
   PlayCircle,
   ShieldCheck,
   WandSparkles,
-  ArrowDown
+  Bot
 } from "lucide-react";
 import {
   Area,
@@ -41,7 +41,7 @@ import {
 import { Section } from "@/components/ui/section";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { InfluenceUniverseScene } from "@/components/landing/influence-scene";
-import { dnaMetrics, growthCurve, campaignForecast, agentSteps } from "@/lib/data";
+import { dnaMetrics, growthCurve, campaignForecast } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 // Social SVG Icons for brand accuracy
@@ -117,6 +117,75 @@ const TREND_DATASETS = [
   }
 ];
 
+const VIRAL_LAB_CONCEPTS = [
+  {
+    id: "seven-second",
+    name: "7-Sec Pivot",
+    eyebrow: "HIGH RETENTION LOOP",
+    description: "Rapid visual open, social proof snap, visual payoff, and save-trigger close.",
+    hookText: "This one mistake is costing you 90% of your audience retention...",
+    lines: [
+      { time: 0, type: "HOOK", text: "Cold Open: 'This one mistake is costing you 90%...'" },
+      { time: 2, type: "PROOF", text: "Visual Snap: *Shows rapid screenshot slides*" },
+      { time: 4, type: "PAYOFF", text: "The Fix: 'Stop loop-baiting and build in public...'" },
+      { time: 6, type: "CTA", text: "Loop Close: 'Save this so you don't forget it.'" }
+    ],
+    metrics: [
+      { subject: "Hook Strength", value: 89, fullMark: 100 },
+      { subject: "Trend Match", value: 84, fullMark: 100 },
+      { subject: "Shareability", value: 92, fullMark: 100 },
+      { subject: "Retention Score", value: 88, fullMark: 100 },
+      { subject: "Virality Score", value: 95, fullMark: 100 }
+    ],
+    confidence: "91.8%",
+    waveform: [20, 35, 10, 45, 25, 5, 30, 40, 15, 8, 22, 50, 18, 12, 38]
+  },
+  {
+    id: "anti-aesthetic",
+    name: "Anti-Aesthetic Vlog",
+    eyebrow: "RAW AUTHENTICITY WAVE",
+    description: "Lo-fi visual contrast, shaky cam zoom, harsh empirical truth, abrupt cut.",
+    hookText: "Your content is cooked. Here is the unvarnished math...",
+    lines: [
+      { time: 0, type: "HOOK", text: "Zoom Open: 'Your content is cooked.'" },
+      { time: 2, type: "TRUTH", text: "Chart Overlay: 'This drop-off is where they leave.'" },
+      { time: 4, type: "ACTION", text: "Action Plan: 'Cut the filler. Add raw telemetry.'" },
+      { time: 6, type: "CUT", text: "Abrupt Cut: *Stares at camera* 'Start now.'" }
+    ],
+    metrics: [
+      { subject: "Hook Strength", value: 96, fullMark: 100 },
+      { subject: "Trend Match", value: 91, fullMark: 100 },
+      { subject: "Shareability", value: 78, fullMark: 100 },
+      { subject: "Retention Score", value: 94, fullMark: 100 },
+      { subject: "Virality Score", value: 89, fullMark: 100 }
+    ],
+    confidence: "89.6%",
+    waveform: [45, 12, 8, 25, 40, 42, 10, 5, 20, 32, 15, 28, 48, 5, 20]
+  },
+  {
+    id: "empirical-deep",
+    name: "Empirical Deep",
+    eyebrow: "DATA-DRIVEN TELEMETRY",
+    description: "Multi-layered screen splits, live charts overlay, rapid-fire facts, save-loop.",
+    hookText: "We analyzed 18 million creator posts. Here is what we found...",
+    lines: [
+      { time: 0, type: "HOOK", text: "Facts Open: 'We analyzed 18M posts so you don't have to...'" },
+      { time: 2, type: "DATA", text: "Visual Curve: '94% of creators hit saturation decay.'" },
+      { time: 4, type: "REMEDY", text: "Breakthrough: 'The 6% who survive use narrative splits.'" },
+      { time: 6, type: "LOOP", text: "Save Loop: 'The prompts are pinned below.'" }
+    ],
+    metrics: [
+      { subject: "Hook Strength", value: 83, fullMark: 100 },
+      { subject: "Trend Match", value: 95, fullMark: 100 },
+      { subject: "Shareability", value: 94, fullMark: 100 },
+      { subject: "Retention Score", value: 90, fullMark: 100 },
+      { subject: "Virality Score", value: 93, fullMark: 100 }
+    ],
+    confidence: "91.2%",
+    waveform: [10, 15, 22, 28, 35, 42, 48, 50, 45, 38, 30, 24, 18, 12, 8]
+  }
+];
+
 export default function SaaSLandingPage() {
   const router = useRouter();
   const { setIsAuthenticated, setIsAdmin } = useNexusStore();
@@ -134,6 +203,11 @@ export default function SaaSLandingPage() {
   // Telemetry Dashboard state
   const [activeTrendIdx, setActiveTrendIdx] = useState(0);
   const currentTrend = TREND_DATASETS[activeTrendIdx];
+
+  // AI Viral Lab states
+  const [selectedConceptIdx, setSelectedConceptIdx] = useState(0);
+  const [isPlayingLab, setIsPlayingLab] = useState(false);
+  const [labTime, setLabTime] = useState(0);
 
   // Default theme is dark!
   const [isDark, setIsDark] = useState(true);
@@ -182,6 +256,28 @@ export default function SaaSLandingPage() {
       localStorage.setItem("theme", "light");
     }
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isPlayingLab) {
+      interval = setInterval(() => {
+        setLabTime((prev) => {
+          if (prev >= 7) return 0;
+          return prev + 1;
+        });
+      }, 1000);
+    } else {
+      setLabTime(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlayingLab]);
+
+  useEffect(() => {
+    setIsPlayingLab(false);
+    setLabTime(0);
+  }, [selectedConceptIdx]);
 
   const handleOpenAuth = (mode: "login" | "signup", isAdminPortal = false) => {
     setAuthMode(mode);
@@ -866,66 +962,337 @@ export default function SaaSLandingPage() {
 
       {/* AI VIRAL LAB */}
       <Section eyebrow="AI viral lab" title="Generate, score, and sharpen content before it hits the feed." className="scroll-reveal text-center relative select-none">
-        <div className="grid gap-6 lg:grid-cols-2 text-left">
-          <GlassPanel className="min-h-[460px] p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] flex flex-col justify-between shadow-sm">
-            <div className="mb-5 flex items-center gap-3 text-[#AEF597]">
-              <PlayCircle className="h-5 w-5" />
-              <span className="text-xs uppercase tracking-wider font-bold">Generated Video Framework</span>
-            </div>
-            <div className="flex h-[340px] items-center justify-center rounded-xl border border-white/5 bg-black/40">
-              <div className="max-w-xs text-center p-6">
-                <WandSparkles className="mx-auto mb-5 h-12 w-12 text-[#AEF597] animate-pulse" />
-                <p className="text-lg font-black text-white uppercase tracking-wide">The 7-Second Rule Pivot</p>
-                <p className="mt-3 text-xs text-slate-400 leading-relaxed">Cold open, social proof snap, visual payoff, and save-trigger close.</p>
-              </div>
-            </div>
-          </GlassPanel>
-          <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm">
-            <div className="mb-5 flex items-center gap-3 text-[#AEF597]">
-              <Cpu className="h-5 w-5" />
-              <span className="text-xs uppercase tracking-wider font-bold">AI Analysis Metrics</span>
-            </div>
-            <div className="space-y-6">
-              {["Hook Strength", "Trend Match", "Shareability", "Retention Score", "Virality Score"].map((metric, index) => {
-                const value = 76 + index * 4;
-                return (
-                  <div key={metric}>
-                    <div className="mb-2 flex justify-between text-xs font-bold text-slate-400">
-                      <span>{metric.toUpperCase()}</span>
-                      <span className="text-white">{value}%</span>
+        {/* Concept Selector Tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {VIRAL_LAB_CONCEPTS.map((concept, idx) => {
+            const isActive = selectedConceptIdx === idx;
+            return (
+              <button
+                key={concept.id}
+                onClick={() => setSelectedConceptIdx(idx)}
+                suppressHydrationWarning={true}
+                className={cn(
+                  "px-5 py-2.5 rounded-full text-xs font-bold font-mono tracking-widest uppercase transition-all duration-300 border",
+                  isActive
+                    ? "bg-[#AEF597] text-slate-950 border-[#AEF597] shadow-[0_0_15px_rgba(174,245,151,0.4)]"
+                    : "bg-white/5 text-slate-400 border-white/10 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                {concept.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[400px_1fr] text-left">
+          {/* Left Panel: Smartphone Video simulator */}
+          {(() => {
+            const currentConcept = VIRAL_LAB_CONCEPTS[selectedConceptIdx];
+            return (
+              <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] flex flex-col justify-between shadow-sm min-h-[500px]">
+                <div className="mb-4 flex items-center justify-between text-[#AEF597]">
+                  <div className="flex items-center gap-2">
+                    <PlayCircle className="h-5 w-5" />
+                    <span className="text-xs uppercase tracking-wider font-bold">Interactive Simulator</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded border border-white/5 tracking-wider">
+                    {currentConcept.eyebrow}
+                  </span>
+                </div>
+
+                {/* Smartphone Mockup */}
+                <div className="flex-1 flex flex-col items-center justify-center p-2">
+                  <div className="w-full max-w-[250px] border-4 border-white/10 rounded-[32px] bg-black/90 p-4 aspect-[9/16] relative flex flex-col justify-between overflow-hidden shadow-2xl">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-b-xl z-20 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                     </div>
-                    <div className="h-2 rounded-full bg-white/5">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#AEF597] to-emerald-500"
-                        style={{ width: `${value}%` }}
-                      />
+
+                    {/* Status Bar */}
+                    <div className="flex justify-between items-center text-[7px] font-mono text-slate-600 mt-2 z-10">
+                      <span>NEXUS SIM v2.7</span>
+                      <span className={cn("animate-pulse uppercase font-black", isPlayingLab ? "text-[#AEF597]" : "text-slate-500")}>
+                        {isPlayingLab ? "● TELEMETRY LIVE" : "■ STANDBY"}
+                      </span>
+                    </div>
+
+                    {/* Video Screen Area */}
+                    <div className="flex-1 flex flex-col items-center justify-center relative my-3 rounded-xl border border-white/5 bg-black/50 overflow-hidden">
+                      {isPlayingLab && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#AEF597]/5 to-transparent pointer-events-none" />
+                      )}
+
+                      {/* Play overlay button */}
+                      <button
+                        onClick={() => setIsPlayingLab(!isPlayingLab)}
+                        suppressHydrationWarning={true}
+                        className="absolute z-30 p-3.5 rounded-full bg-black/60 border border-white/10 text-white hover:scale-105 hover:bg-black/80 hover:border-[#AEF597]/40 hover:text-[#AEF597] transition-all"
+                      >
+                        {isPlayingLab ? (
+                          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                          </svg>
+                        ) : (
+                          <svg className="h-5 w-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        )}
+                      </button>
+
+                      {/* Waveform graphic */}
+                      <div className="absolute bottom-3 inset-x-3 flex items-end justify-center gap-1 h-10 pointer-events-none">
+                        {currentConcept.waveform.map((barHeight, i) => {
+                          const baseHeight = barHeight;
+                          const animatedHeight = isPlayingLab 
+                            ? Math.max(10, baseHeight + Math.sin(labTime * 2 + i) * 15)
+                            : baseHeight;
+                          return (
+                            <div
+                              key={i}
+                              className="w-1 rounded-full bg-[#AEF597] transition-all duration-150"
+                              style={{
+                                height: `${animatedHeight}%`,
+                                opacity: isPlayingLab ? 0.9 : 0.4
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+
+                      {/* Time Code */}
+                      <div className="absolute top-2 right-2 text-[8px] font-mono text-slate-500 bg-black/60 px-1.5 py-0.2 rounded border border-white/5">
+                        0:0{7 - labTime}s
+                      </div>
+                    </div>
+
+                    {/* Scrolling Script Transcript preview */}
+                    <div className="h-24 overflow-y-auto bg-black/40 border border-white/5 rounded-xl p-2 font-mono text-[8px] space-y-1.5 text-left custom-scrollbar select-none z-10">
+                      {currentConcept.lines.map((line, idx) => {
+                        const isPassed = labTime >= line.time;
+                        const isCurrent = labTime >= line.time && (idx === currentConcept.lines.length - 1 || labTime < currentConcept.lines[idx + 1].time);
+                        return (
+                          <div
+                            key={idx}
+                            className={cn(
+                              "transition-all duration-300 py-0.5 px-1 rounded flex items-start gap-1",
+                              isCurrent 
+                                ? "bg-[#AEF597]/15 border border-[#AEF597]/20 text-white font-extrabold" 
+                                : isPassed 
+                                  ? "text-slate-500 font-medium" 
+                                  : "text-slate-700"
+                            )}
+                          >
+                            <span className={cn(
+                              "text-[7px] font-black tracking-widest px-0.8 py-0.1 rounded border uppercase shrink-0",
+                              isCurrent 
+                                ? "bg-[#AEF597]/20 text-[#AEF597] border-[#AEF597]/30" 
+                                : "bg-white/5 text-slate-600 border-white/5"
+                            )}>
+                              {line.type}
+                            </span>
+                            <span className="leading-tight">{line.text}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </GlassPanel>
+                </div>
+
+                <div className="mt-3 text-center">
+                  <p className="text-xs font-black text-white uppercase tracking-wider">{currentConcept.name}</p>
+                  <p className="mt-1 text-[10px] text-slate-400 leading-normal max-w-xs mx-auto">
+                    {currentConcept.description}
+                  </p>
+                </div>
+              </GlassPanel>
+            );
+          })()}
+
+          {/* Right Panel: AI Analysis Metrics with Radar Chart & Glowing Progress Bars */}
+          {(() => {
+            const currentConcept = VIRAL_LAB_CONCEPTS[selectedConceptIdx];
+            return (
+              <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm flex flex-col justify-between min-h-[500px]">
+                <div>
+                  <div className="mb-6 flex items-center justify-between text-[#AEF597]">
+                    <div className="flex items-center gap-3">
+                      <Cpu className="h-5 w-5 animate-pulse" />
+                      <span className="text-xs uppercase tracking-wider font-bold">AI Analysis Metrics</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#AEF597]/10 border border-[#AEF597]/20 text-[#AEF597] rounded text-[9px] font-black tracking-wider font-mono uppercase">
+                      <span>CONFIDENCE: {currentConcept.confidence}</span>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-[1.1fr_1fr] items-center">
+                    {/* Recharts Radar chart representation */}
+                    <div className="relative h-[250px] w-full flex items-center justify-center bg-black/20 border border-white/5 rounded-2xl overflow-hidden p-2">
+                      <div className="absolute inset-0 bg-dot-pattern opacity-10" />
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart data={currentConcept.metrics} outerRadius="70%">
+                          <PolarGrid gridType="polygon" stroke="rgba(255,255,255,.08)" />
+                          <PolarAngleAxis dataKey="subject" tick={{ fill: "#94A3B8", fontSize: 9, fontWeight: "bold" }} />
+                          <Radar
+                            name="Concept Score"
+                            dataKey="value"
+                            stroke="#AEF597"
+                            fill="#AEF597"
+                            fillOpacity={0.15}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Progress bars */}
+                    <div className="space-y-4">
+                      {currentConcept.metrics.map((metric) => (
+                        <div key={metric.subject} className="group">
+                          <div className="mb-1.5 flex justify-between text-[10px] font-mono font-bold text-slate-400">
+                            <span className="group-hover:text-white transition-colors uppercase tracking-wider">{metric.subject}</span>
+                            <span className="text-white bg-white/5 px-1.5 py-0.2 rounded border border-white/5 font-extrabold">{metric.value}%</span>
+                          </div>
+                          
+                          <div className="h-2.5 rounded-full bg-black/60 border border-white/5 p-[2px] relative overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-[#AEF597] to-emerald-400 transition-all duration-500 ease-out shadow-[0_0_8px_rgba(174,245,151,0.5)]"
+                              style={{ width: `${metric.value}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grid details */}
+                <div className="mt-6 pt-4 border-t border-white/5 grid grid-cols-3 gap-2.5 text-center font-mono text-[9px]">
+                  <div className="bg-black/30 border border-white/5 rounded-xl p-2.5">
+                    <span className="text-slate-500 uppercase block tracking-wider mb-0.5">Decay Resistance</span>
+                    <span className="text-white font-extrabold uppercase">+41.2%</span>
+                  </div>
+                  <div className="bg-black/30 border border-white/5 rounded-xl p-2.5">
+                    <span className="text-slate-500 uppercase block tracking-wider mb-0.5">Attention Lock</span>
+                    <span className="text-[#AEF597] font-extrabold uppercase">Optimal</span>
+                  </div>
+                  <div className="bg-black/30 border border-white/5 rounded-xl p-2.5">
+                    <span className="text-slate-500 uppercase block tracking-wider mb-0.5">Immunity Index</span>
+                    <span className="text-emerald-400 font-extrabold uppercase">High</span>
+                  </div>
+                </div>
+              </GlassPanel>
+            );
+          })()}
+
         </div>
       </Section>
 
       {/* AUTONOMOUS AI AGENT WORKFLOW STEPS */}
-      <Section eyebrow="Autonomous AI agent" title="A creator growth system that keeps working." copy="Trend, creative, campaign, and publishing agents coordinate as a single adaptive workflow." className="scroll-reveal text-center relative select-none">
-        <div className="mx-auto max-w-2xl text-left">
-          {agentSteps.map((step, index) => (
-            <div key={step} className="relative">
-              <GlassPanel className="mb-5 flex items-center gap-4 p-5 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-xl shadow-sm">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#AEF597]/30 bg-[#AEF597]/10 text-[#AEF597] text-xs font-black">
-                  0{index + 1}
+      <Section 
+        eyebrow="Autonomous AI agent" 
+        title="A creator growth system that keeps working." 
+        copy="Trend, creative, campaign, and publishing agents coordinate as a single adaptive workflow." 
+        className="scroll-reveal text-center relative select-none"
+      >
+        <div className="mx-auto max-w-3xl text-left relative pl-14 sm:pl-20 mt-12">
+          {/* Vertical connecting timeline line */}
+          <div className="absolute left-[33px] sm:left-[39px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#AEF597] via-[#AEF597]/30 to-transparent z-0 pointer-events-none" />
+
+          {/* Details for our high-fidelity custom steps */}
+          {[
+            {
+              title: "Trend Discovery",
+              description: "Scanning 18.4M cultural signals, identifying fatigue patterns, and isolating rising counter-narratives.",
+              confidence: "88%",
+              tag: "SCANNING",
+              icon: Sparkles,
+              tagColor: "text-[#AEF597] bg-[#AEF597]/10 border-[#AEF597]/20"
+            },
+            {
+              title: "Script Generation",
+              description: "Drafting high-retention opening hooks and crafting authentic, anti-slop creator briefs.",
+              confidence: "89%",
+              tag: "GENERATING",
+              icon: WandSparkles,
+              tagColor: "text-blue-400 bg-blue-500/10 border-blue-500/20"
+            },
+            {
+              title: "Video Creation",
+              description: "Simulating visual contrast heatmaps, editing hooks, and structuring layout anchors.",
+              confidence: "90%",
+              tag: "CALIBRATING",
+              icon: PlayCircle,
+              tagColor: "text-purple-400 bg-purple-500/10 border-purple-500/20"
+            },
+            {
+              title: "Caption Generation",
+              description: "Optimizing CTA keywords and preparing copywriting metrics for maximum bookmark/save rates.",
+              confidence: "91%",
+              tag: "OPTIMIZING",
+              icon: Bot,
+              tagColor: "text-amber-400 bg-amber-500/10 border-amber-500/20"
+            },
+            {
+              title: "Virality Prediction",
+              description: "Scoring content fatigue resistance and simulating initial cohort distribution.",
+              confidence: "92%",
+              tag: "SIMULATING",
+              icon: LineChart,
+              tagColor: "text-red-400 bg-red-500/10 border-red-500/20"
+            },
+            {
+              title: "Publishing Optimization",
+              description: "Matching peak cultural attention windows and scheduling atomic releases.",
+              confidence: "93%",
+              tag: "DEPLOYED",
+              icon: ShieldCheck,
+              tagColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+            }
+          ].map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div key={step.title} className="relative group mb-8 last:mb-0 z-10">
+                
+                {/* Timeline Node Point */}
+                <div className="absolute -left-[50px] sm:-left-[60px] top-3 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/50 dark:border-white/10 bg-slate-50 dark:bg-[#0c0a21] text-slate-900 dark:text-white font-mono text-xs font-black shadow-md transition-all duration-300 group-hover:border-[#AEF597] group-hover:shadow-[0_0_15px_rgba(174,245,151,0.4)] group-hover:scale-110">
+                  <span className="group-hover:text-[#AEF597]">0{index + 1}</span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-bold text-white text-xs uppercase tracking-wider">{step}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">Confidence: {88 + index}%</p>
-                </div>
-                <Activity className="h-5 w-5 text-[#AEF597] animate-pulse" />
-              </GlassPanel>
-              {index < agentSteps.length - 1 && <ArrowDown className="mx-auto mb-5 h-5 w-5 text-[#AEF597]" />}
-            </div>
-          ))}
+
+                {/* Workflow Card */}
+                <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/20 hover:dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 hover:border-[#AEF597]/25 rounded-2xl shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md flex flex-col md:flex-row md:items-center gap-5 justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 text-slate-500 dark:text-slate-400 group-hover:text-[#AEF597] group-hover:bg-[#AEF597]/5 group-hover:border-[#AEF597]/15 transition-colors duration-300 shrink-0">
+                      <Icon className="h-5 w-5 animate-pulse" style={{ animationDuration: '3s' }} />
+                    </div>
+                    <div className="space-y-1.5 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="font-sans font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">
+                          {step.title}
+                        </h4>
+                        <span className={cn("px-2 py-0.5 rounded text-[8px] font-mono font-bold tracking-widest border uppercase", step.tagColor)}>
+                          {step.tag}
+                        </span>
+                      </div>
+                      <p className="font-sans text-xs text-slate-500 dark:text-[#a6a3bf] leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Telemetry data side status panel */}
+                  <div className="flex items-center md:flex-col md:items-end justify-between border-t border-slate-100 dark:border-white/5 md:border-none pt-4 md:pt-0 shrink-0 gap-2">
+                    <div className="text-left md:text-right space-y-0.5 font-mono">
+                      <span className="block text-[8px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest leading-none">Confidence Rating</span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white">{step.confidence}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#AEF597] animate-pulse shrink-0" />
+                      <span className="text-[8px] font-mono font-bold text-[#AEF597] uppercase tracking-widest leading-none">Active Run</span>
+                    </div>
+                  </div>
+                </GlassPanel>
+              </div>
+            );
+          })}
         </div>
       </Section>
 
@@ -974,7 +1341,7 @@ export default function SaaSLandingPage() {
           
           <button
             onClick={() => handleOpenAuth("signup")}
-            className="w-full py-3.5 bg-brand-gradient hover:shadow-button-glow text-slate-955 font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 text-center"
+            className="w-full py-3.5 bg-brand-gradient hover:shadow-button-glow text-slate-950 font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 text-center"
           >
             Start Predicting
           </button>

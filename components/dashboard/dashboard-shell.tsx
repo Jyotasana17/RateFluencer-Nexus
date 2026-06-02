@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -24,6 +24,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<string[]>([]);
   const [accessPhrase, setAccessPhrase] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Simulation notification system
   const triggerNotification = (message: string) => {
@@ -76,7 +81,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         ))}
       </div>
 
-      {!isAuthenticated ? (
+      {!mounted ? (
+        <div className="flex h-screen w-full items-center justify-center bg-[#050505] font-mono text-xs text-[#6B7280]">
+          [ LOADING SECURE COMMAND TERMINAL... ]
+        </div>
+      ) : !isAuthenticated ? (
         /* ═══════════════════════════════════════════════════════
             SECURED LOGIN SCREEN - Custom Luxury Cyber Command Login
             ═══════════════════════════════════════════════════════ */
@@ -110,12 +119,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   className="w-full h-11 px-4 bg-black border border-white/10 focus:border-red-500/40 rounded-lg text-xs font-bold text-white placeholder-slate-800 focus:outline-none transition-all uppercase tracking-widest text-center"
                   required
                   disabled={isLoading}
+                  suppressHydrationWarning={true}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
+                suppressHydrationWarning={true}
                 className="group relative flex w-full items-center justify-center gap-2 rounded-xl bg-red-950/40 hover:bg-red-950/60 text-red-550 border border-red-500/20 hover:border-red-500/40 font-bold py-3.5 text-xs transition-all duration-300 disabled:opacity-50 active:scale-95 uppercase tracking-widest"
               >
                 {isLoading ? (
@@ -288,6 +299,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 {/* Disconnect Shell button */}
                 <button
                   onClick={handleDisconnect}
+                  suppressHydrationWarning={true}
                   className={cn(
                     "h-10 px-4 transition-all rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 font-mono border",
                     isAdmin
