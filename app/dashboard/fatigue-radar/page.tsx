@@ -195,13 +195,13 @@ export default function FatigueRadarPage() {
   );
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8 animate-fade-in-up text-[#f1f0f7]">
       {/* Header section */}
       <div>
-        <h2 className="text-xl font-bold tracking-tight md:text-2xl uppercase">
+        <h2 className="text-xl font-bold tracking-tight md:text-2xl uppercase text-white font-hanken">
           Fatigue Radar Workspace
         </h2>
-        <p className="text-xs font-semibold text-slate-400">
+        <p className="text-xs font-semibold text-[#a6a3bf]">
           Direct counter-narratives calculated from active fatigue indices. Select or input a trend to generate reversal concepts.
         </p>
       </div>
@@ -212,13 +212,13 @@ export default function FatigueRadarPage() {
           {/* Search and custom input */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute top-3 left-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute top-3 left-3 h-4 w-4 text-[#a6a3bf]" />
               <input
                 type="text"
                 placeholder="Filter active trends by name or narrative..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-[#E2E8F0] bg-white py-2.5 pr-4 pl-10 text-xs font-semibold text-slate-800 placeholder-slate-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pr-4 pl-10 text-xs font-semibold text-white placeholder-slate-450 focus:border-[#AEF597]/40 focus:outline-none focus:ring-2 focus:ring-[#AEF597]/15 transition-all"
               />
             </div>
             
@@ -228,31 +228,31 @@ export default function FatigueRadarPage() {
                 placeholder="Analyze custom trend..."
                 value={customTrend}
                 onChange={(e) => setCustomTrend(e.target.value)}
-                className="min-w-[200px] rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 placeholder-slate-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                className="min-w-[200px] rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white placeholder-slate-450 focus:border-[#AEF597]/40 focus:outline-none focus:ring-2 focus:ring-[#AEF597]/15 transition-all"
               />
               <button
                 type="submit"
-                className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-500 active:scale-95 shrink-0"
+                className="flex items-center gap-1.5 rounded-xl bg-brand-gradient hover:shadow-button-glow px-4 py-2.5 text-xs font-black text-slate-955 shadow-sm transition-all active:scale-95 shrink-0"
               >
-                <Cpu className="h-3.5 w-3.5 text-white" />
+                <Cpu className="h-3.5 w-3.5 text-slate-950" />
                 <span>Analyze</span>
               </button>
             </form>
           </div>
 
           {/* Saturated Feed List */}
-          <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-sm font-bold tracking-tight flex items-center gap-2">
-                <Skull className="h-4 w-4 text-blue-600" />
+          <div className="glass-panel border-white/5 rounded-2xl p-6 shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 className="text-sm font-bold tracking-tight flex items-center gap-2 text-white font-hanken">
+                <Skull className="h-4 w-4 text-[#AEF597] animate-pulse" />
                 ACTIVE BURNOUT INTELLIGENCE
               </h3>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">REAL-TIME TELEMETRY</span>
+              <span className="text-[10px] font-bold text-[#a6a3bf] uppercase tracking-wider font-mono">REAL-TIME TELEMETRY</span>
             </div>
 
             <div className="space-y-4">
               {filteredTrends.length === 0 ? (
-                <div className="py-8 text-center text-xs font-semibold text-slate-400">
+                <div className="py-8 text-center text-xs font-semibold text-[#a6a3bf]">
                   No saturated vectors found matching your search.
                 </div>
               ) : (
@@ -270,21 +270,21 @@ export default function FatigueRadarPage() {
                       }}
                       className={`group rounded-2xl border p-5 cursor-pointer transition-all duration-100 ${
                         isSelected
-                          ? "bg-blue-50/60 border-blue-200 shadow-sm"
-                          : "bg-[#F8F9FD] border-slate-100 hover:border-blue-100 hover:bg-blue-50/30"
+                          ? "bg-[#AEF597]/10 border-[#AEF597]/30 shadow-[0_0_12px_rgba(174,245,151,0.05)]"
+                          : "bg-white/5 border border-white/5 hover:border-[#AEF597]/20 hover:bg-white/10"
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="space-y-1">
-                          <h4 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                          <h4 className="text-sm font-bold text-white group-hover:text-[#AEF597] transition-colors font-hanken">
                             {trend.trendName}
                           </h4>
                           <div className="flex flex-wrap gap-2 items-center">
                             <span
-                              className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${
+                              className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border font-mono ${
                                 isHighFatigue
-                                  ? "text-rose-600 border-rose-100 bg-rose-50"
-                                  : "text-blue-600 border-blue-100 bg-blue-50"
+                                  ? "text-rose-400 border-rose-500/20 bg-rose-500/10"
+                                  : "text-[#AEF597] border-emerald-500/20 bg-[#AEF597]/10"
                               }`}
                             >
                               {isHighFatigue ? "Critical Fatigue" : trend.status}
@@ -294,7 +294,7 @@ export default function FatigueRadarPage() {
                               {trend.sentiment.slice(0, 3).map((tag) => (
                                 <span
                                   key={tag}
-                                  className="text-[9px] font-semibold text-slate-500 bg-white rounded px-1.5 py-0.5 border border-slate-100"
+                                  className="text-[9px] font-semibold text-[#a6a3bf] bg-white/5 rounded px-1.5 py-0.5 border border-white/5 font-mono"
                                 >
                                   {tag}
                                 </span>
@@ -306,22 +306,22 @@ export default function FatigueRadarPage() {
                         {/* Progress meter */}
                         <div className="flex items-center gap-3 shrink-0">
                           <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-bold text-slate-400">FATIGUE INDEX</span>
+                            <span className="text-[10px] font-bold text-[#a6a3bf] font-mono">FATIGUE INDEX</span>
                             <span
                               className={`text-sm font-bold font-mono ${
-                                isHighFatigue ? "text-rose-600" : "text-blue-600"
+                                isHighFatigue ? "text-rose-450" : "text-[#AEF597]"
                               }`}
                             >
                               {trend.fatigueScore} / 100
                             </span>
                           </div>
                           
-                          <div className="h-10 w-1.5 rounded-full bg-slate-100 overflow-hidden relative">
+                          <div className="h-10 w-1.5 rounded-full bg-white/5 overflow-hidden relative border border-white/10">
                             <div
                               className={`absolute bottom-0 inset-x-0 rounded-full transition-all duration-200 ${
                                 isHighFatigue
-                                  ? "bg-gradient-to-t from-rose-500 to-rose-600 animate-pulse"
-                                  : "bg-gradient-to-t from-blue-500 to-blue-600"
+                                  ? "bg-gradient-to-t from-rose-500 to-rose-450 animate-pulse"
+                                  : "bg-gradient-to-t from-[#AEF597] to-[#A8F690]"
                               }`}
                               style={{ height: `${trend.fatigueScore}%` }}
                             />
@@ -338,13 +338,13 @@ export default function FatigueRadarPage() {
 
         {/* Right Side: Interactive Tactical Reversal Lab */}
         <div className="space-y-6">
-          <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col min-h-[500px]">
-            <div className="border-b border-slate-100 pb-4 mb-5">
-              <h3 className="text-sm font-bold tracking-tight flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-600" />
+          <div className="glass-panel border-white/5 rounded-2xl p-6 shadow-2xl flex flex-col min-h-[500px]">
+            <div className="border-b border-white/5 pb-4 mb-5">
+              <h3 className="text-sm font-bold tracking-tight flex items-center gap-2 text-white font-hanken">
+                <Sparkles className="h-4 w-4 text-[#AEF597]" />
                 TACTICAL REVERSAL LAB
               </h3>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+              <p className="text-[11px] font-bold text-[#a6a3bf] uppercase tracking-widest mt-1 font-mono">
                 Workspace Concept Formulator
               </p>
             </div>
@@ -353,34 +353,34 @@ export default function FatigueRadarPage() {
               <div className="flex-1 flex flex-col justify-between">
                 {/* Active selection info */}
                 <div className="space-y-5">
-                  <div className="rounded-2xl bg-[#F8F9FD] border border-slate-100 p-4 space-y-2">
-                    <span className="text-[9px] font-bold text-blue-600 uppercase tracking-widest block">
+                  <div className="rounded-2xl bg-white/5 border border-white/5 p-4 space-y-2">
+                    <span className="text-[9px] font-bold text-[#AEF597] uppercase tracking-widest block font-mono">
                       Target Vector
                     </span>
-                    <h4 className="text-base font-bold text-slate-900 leading-tight">
+                    <h4 className="text-base font-bold text-white leading-tight font-hanken">
                       {selectedTrend.trendName}
                     </h4>
                     
-                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-400">FATIGUE:</span>
-                      <span className="text-xs font-bold text-blue-600">{selectedTrend.fatigueScore}/100</span>
-                      <span className="text-[10px] font-bold text-slate-400 ml-2">VIRALITY MULTIPLIER:</span>
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/5 font-mono">
+                      <span className="text-[10px] font-bold text-[#a6a3bf]">FATIGUE:</span>
+                      <span className="text-xs font-bold text-[#AEF597]">{selectedTrend.fatigueScore}/100</span>
+                      <span className="text-[10px] font-bold text-[#a6a3bf] ml-2">VIRALITY MULTIPLIER:</span>
                       <span className="text-xs font-mono font-bold text-emerald-400">{selectedTrend.viralityPrediction}</span>
                     </div>
                   </div>
 
                   {/* Terminal Action Trigger */}
                   {!isGenerating && !generationFinished && (
-                    <div className="text-center py-6 border border-dashed border-blue-200 bg-blue-50/30 rounded-2xl p-5">
-                      <p className="text-xs font-semibold text-slate-500 mb-4">
+                    <div className="text-center py-6 border border-dashed border-[#AEF597]/20 bg-[#AEF597]/5 rounded-2xl p-5">
+                      <p className="text-xs font-semibold text-[#a6a3bf] mb-4">
                         Load the active fatigue index into the AI generator to draft highly provocative, counter-narrative scripts.
                       </p>
                       
                       <button
                         onClick={triggerReversalGeneration}
-                        className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-500 active:scale-95"
+                        className="group inline-flex items-center gap-2 rounded-xl bg-brand-gradient hover:shadow-button-glow px-5 py-3 text-xs font-bold text-slate-955 shadow-sm transition-all active:scale-95"
                       >
-                        <Play className="h-3.5 w-3.5 fill-white text-white" />
+                        <Play className="h-3.5 w-3.5 fill-slate-950 text-slate-950" />
                         <span>Formulate Reversal Strategy</span>
                       </button>
                     </div>
@@ -388,16 +388,16 @@ export default function FatigueRadarPage() {
 
                   {/* Simulated Terminal processing logs */}
                   {isGenerating && (
-                    <div className="rounded-2xl bg-[#F8F9FD] border border-blue-100 p-5 space-y-3 text-[11px] min-h-[160px] flex flex-col justify-center">
-                      <div className="flex items-center gap-2 text-blue-600 font-bold">
+                    <div className="rounded-2xl bg-black/40 border border-white/10 p-5 space-y-3 text-[11px] min-h-[160px] flex flex-col justify-center font-mono">
+                      <div className="flex items-center gap-2 text-[#AEF597] font-bold">
                         <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                         <span>COMPILING SEMANTIC DESTRUCTION MODEL...</span>
                       </div>
                       
-                      <div className="space-y-1.5 text-slate-500 font-mono">
+                      <div className="space-y-1.5 text-[#a6a3bf]">
                         {generationLogs.map((log, index) => (
                           <div key={index} className="flex gap-2">
-                            <span className="text-blue-400">&gt;</span>
+                            <span className="text-[#AEF597]">&gt;</span>
                             <span>{log}</span>
                           </div>
                         ))}
@@ -409,21 +409,21 @@ export default function FatigueRadarPage() {
                   {generationFinished && (
                     <div className="space-y-5 animate-fade-in-up">
                       {/* Concept brief Card */}
-                      <div className="rounded-2xl bg-emerald-50/40 border border-emerald-100 p-5 space-y-4 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 h-16 w-16 bg-emerald-100/40 blur-md pointer-events-none" />
+                      <div className="rounded-2xl bg-emerald-500/5 border border-emerald-500/20 p-5 space-y-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 h-16 w-16 bg-emerald-500/5 blur-md pointer-events-none" />
                         
                         <div>
-                          <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                          <span className="text-[9px] font-bold text-emerald-450 uppercase tracking-widest block mb-1 font-mono">
                             Disruptive Narrative Angle
                           </span>
-                          <p className="text-sm font-semibold text-slate-800 leading-relaxed">
+                          <p className="text-sm font-semibold text-white leading-relaxed font-hanken">
                             {selectedTrend.aiCounterNarrative}
                           </p>
                         </div>
 
                         {/* Interactive Hook ideas */}
-                        <div className="space-y-3 pt-3 border-t border-emerald-100">
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">
+                        <div className="space-y-3 pt-3 border-t border-white/5">
+                          <span className="text-[9px] font-bold text-[#a6a3bf] uppercase tracking-widest block font-mono">
                             Provocative Script Hooks (Copy to Use)
                           </span>
                           
@@ -431,14 +431,14 @@ export default function FatigueRadarPage() {
                             {selectedTrend.hooks.map((hook, i) => (
                               <div
                                 key={i}
-                                className="flex items-start justify-between gap-3 bg-white border border-emerald-100 hover:border-blue-100 rounded-xl p-3 group/hook transition-all"
+                                className="flex items-start justify-between gap-3 bg-white/5 border border-white/5 hover:border-[#AEF597]/20 rounded-xl p-3 group/hook transition-all"
                               >
-                                <span className="text-xs text-slate-600 leading-snug font-serif italic">
+                                <span className="text-xs text-white leading-snug font-serif italic">
                                   &ldquo;{hook}&rdquo;
                                 </span>
                                 <button
                                   onClick={() => copyToClipboard(hook, `${selectedTrend.id}_h_${i}`)}
-                                  className="rounded-lg p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all shrink-0"
+                                  className="rounded-lg p-1 text-[#a6a3bf] hover:text-[#AEF597] hover:bg-white/5 transition-all shrink-0"
                                   title="Copy hook to tactical clipboard"
                                 >
                                   {copiedId === `${selectedTrend.id}_h_${i}` ? (
@@ -455,13 +455,13 @@ export default function FatigueRadarPage() {
                       
                       {/* Secondary brief detail */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="rounded-xl bg-[#F8F9FD] border border-slate-100 p-4 text-center">
-                          <span className="text-[9px] font-bold text-slate-400 block">VIRALITY ESTIMATE</span>
-                          <span className="text-lg font-bold text-blue-600">{selectedTrend.viralityPrediction}</span>
+                        <div className="rounded-xl bg-white/5 border border-white/5 p-4 text-center">
+                          <span className="text-[9px] font-bold text-[#a6a3bf] block font-mono">VIRALITY ESTIMATE</span>
+                          <span className="text-lg font-bold text-[#AEF597] font-mono">{selectedTrend.viralityPrediction}</span>
                         </div>
-                        <div className="rounded-xl bg-[#F8F9FD] border border-slate-100 p-4 text-center">
-                          <span className="text-[9px] font-bold text-slate-400 block">OPPORTUNITY LEVEL</span>
-                          <span className="text-lg font-bold text-emerald-600">OPTIMAL</span>
+                        <div className="rounded-xl bg-white/5 border border-white/5 p-4 text-center">
+                          <span className="text-[9px] font-bold text-[#a6a3bf] block font-mono">OPPORTUNITY LEVEL</span>
+                          <span className="text-lg font-bold text-emerald-400 font-mono">OPTIMAL</span>
                         </div>
                       </div>
                     </div>
@@ -475,7 +475,7 @@ export default function FatigueRadarPage() {
                       setGenerationFinished(false);
                       setGenerationLogs([]);
                     }}
-                    className="mt-6 w-full flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                    className="mt-6 w-full flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-bold text-[#a6a3bf] hover:text-[#AEF597] hover:bg-white/10 transition-all font-mono"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     <span>Reset Lab Canvas</span>
@@ -483,8 +483,8 @@ export default function FatigueRadarPage() {
                 )}
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-400">
-                <Terminal className="h-10 w-10 text-slate-300 mb-3" />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[#a6a3bf]">
+                <Terminal className="h-10 w-10 text-white/20 mb-3" />
                 <span className="text-xs font-semibold">No target vector selected. Scan or select a trend to load.</span>
               </div>
             )}
