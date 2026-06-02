@@ -48,6 +48,13 @@ Allows creators to input any custom keyword or trend to run an on-the-fly satura
 Generate, format, and download fully parsed Trend Analytics reports.
 *   **Comprehensive Brief Export:** Compiles key telemetry numbers, AI predictive recommendations, sentiment diagnostics, and counter-narrative outlines with a single click.
 
+### 6. Secure Admin Command Center & Operations Console
+A specialized cockpit dedicated to site maintenance, user access permissions, and telemetry logs.
+*   **Decryption Access Port:** Relocated the entry point to a subtle, low-contrast `[ Admin Terminal ]` link in the landing page footer.
+*   **Enforced Key Protection:** Authentication modal dynamically hides all security key hints from regular users. Standard login attempts are blocked from elevating privileges, ensuring admin views are gated strictly behind the passcode-only portal.
+*   **Operational Control Room:** Direct redirection of admin logins to `/dashboard/admin` showing active server node diagnostics, live CPU core loads, and a directory panel with creator suspension toggles.
+*   **Dynamic Navigation Trimming:** Once authenticated as an administrator, creator options are automatically filtered out, displaying only the core operational links (System Admin, System Settings).
+
 ---
 
 ## 💎 Uniqueness & Innovation
