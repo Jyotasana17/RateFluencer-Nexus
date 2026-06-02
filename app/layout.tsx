@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,9 +8,15 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-hanken",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
   display: "swap",
 });
 
@@ -41,7 +47,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${playfair.variable}`}
+      className={`${inter.variable} ${hanken.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
