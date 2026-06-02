@@ -1,21 +1,6 @@
 # RateFluencer Nexus (Trend Fatigue Engine AI)
 
-<p align="center">
-  <img src="public/ai-trend-dashboard.png" alt="RateFluencer Nexus Logo" width="120" style="border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);" />
-</p>
-
-<h3 align="center">⚡ Sparks Team // Creator Burnout & Trend Telemetry Platform ⚡</h3>
-
 RateFluencer Nexus is a state-of-the-art, high-fidelity creator intelligence and trend fatigue analytics dashboard. By applying mathematical telemetry to the chaos of modern digital culture, RateFluencer Nexus detects the exact moment when interest peaks and audience burnout begins—giving creators, marketers, and brands the data-driven foresight to pivot before a topic is completely saturated.
-
----
-
-## 👥 Meet Team Sparks
-*   **Team Name:** Sparks
-*   **Team Members:**
-    1.  **Jyotasana**
-    2.  **Arpita Matta**
-    3.  **Anand Minejes**
 
 ---
 
@@ -146,6 +131,15 @@ This repository contains a pre-configured `netlify.toml` file. To deploy:
     *   **Build command:** `npm run build`
     *   **Publish directory:** `out`
 3.  Deploy!
+
+---
+
+## 👥 Meet Team Sparks
+*   **Team Name:** Sparks
+*   **Team Members:**
+    1.  **Jyotasana**
+    2.  **Arpita Matta**
+    3.  **Anand Minejes**
 
 ---
 
