@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   --font-inter: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-hanken: "Hanken Grotesk", "Inter", sans-serif;
+  --font-jetbrains: "JetBrains Mono", "Courier New", monospace;
 }
 
 * {
@@ -13,22 +15,135 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #FAFAFB;
+  background-color: #0a071b;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background-color: #FCFCFD;
-  color: #1E293B;
+  background-color: #0a071b;
+  color: #f1f0f7;
   font-family: var(--font-inter);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 body::selection {
-  background: rgba(99, 102, 241, 0.15);
-  color: #4F46E5;
+  background: rgba(93, 92, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Premium Typography classes as specified in Design System (Updated for Dark Mode) */
+.display-lg {
+  font-family: var(--font-hanken);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.headline-lg {
+  font-family: var(--font-hanken);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.headline-lg-mobile {
+  font-family: var(--font-hanken);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.headline-md {
+  font-family: var(--font-hanken);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.body-lg {
+  font-family: var(--font-inter);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #a6a3bf;
+}
+
+.body-md {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #a6a3bf;
+}
+
+.label-sm {
+  font-family: var(--font-jetbrains);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: 0.05em;
+  color: #8f8ca8;
+}
+
+/* Premium Minimalism Glassmorphism Utilities (Updated for Dark Mode) */
+.glass-panel {
+  background: rgba(13, 9, 32, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-dark {
+  background: rgba(10, 8, 26, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-panel-heavy {
+  background: rgba(13, 9, 32, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Color Gradients & Visual Filters */
+.text-gradient-brand {
+  background: linear-gradient(135deg, #5d5cff 0%, #a855f7 40%, #f43f5e 75%, #eab308 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark grid mesh layer */
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* 2D Liquid Metaball Background — Static Image */
+.liquid-bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -10;
+  background-color: #090716;
+  background-image: url('/liquid-bg.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 /* Apple-style smooth scroll reveal utilities */
