@@ -17,8 +17,31 @@ import {
   Cpu,
   Database,
   LineChart,
-  Terminal
+  Sun,
+  Moon,
+  Sparkles
 } from "lucide-react";
+
+// Social SVG Icons for brand accuracy
+const InstagramIcon = () => (
+  <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const TikTokIcon = () => (
+  <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.74-3.99-1.72-.04 2.87-.01 5.75-.02 8.62-.1 1.77-.73 3.56-1.97 4.8-1.5 1.54-3.82 2.24-5.94 1.91-2.45-.37-4.63-2.12-5.32-4.54-.88-2.92.36-6.31 2.92-7.71 1.11-.6 2.4-.79 3.65-.62v4.13c-.88-.23-1.88-.08-2.61.48-.82.61-1.12 1.69-.9 2.68.22 1.05 1.13 1.86 2.21 1.89 1.39.09 2.66-.9 2.77-2.29.04-3.94.02-7.88.03-11.82-1.72-.08-3.41-.75-4.58-2.03-.49-.53-.87-1.16-1.12-1.85h4.15z" />
+  </svg>
+);
+
+const TwitterIcon = () => (
+  <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 // Interactive Trend Previews for the WaveShift Telemetry Dashboard
 const TREND_DATASETS = [
@@ -63,7 +86,7 @@ const TREND_DATASETS = [
     change: "-22%",
     remedy: "Radical Counter",
     pathDown: "M 0 40 Q 130 50, 280 135 T 600 260",
-    alternative: "Brutalism & Analog Grids",
+    alternative: "Brutalism & Analog Grgrids",
     altCategory: "Rising Opportunity",
     altStatus: "Disruptive",
     altChange: "+148%",
@@ -89,17 +112,21 @@ export default function SaaSLandingPage() {
   const [activeTrendIdx, setActiveTrendIdx] = useState(0);
   const currentTrend = TREND_DATASETS[activeTrendIdx];
 
-  // Mount state to prevent hydration errors
-  const [hasMounted, setHasMounted] = useState(false);
+  // Default theme is dark!
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    // Initialize theme based on user selection or defaults
+    const savedTheme = localStorage.getItem("theme");
+    const defaultDark = savedTheme !== "light"; // Default to dark unless explicitly light
+    setIsDark(defaultDark);
+    if (defaultDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
 
-  // Scroll reveal setup
-  useEffect(() => {
-    if (!hasMounted) return;
-
+    // Scroll reveal setup
     const observerOptions = {
       root: null,
       rootMargin: "0px",
@@ -119,7 +146,19 @@ export default function SaaSLandingPage() {
     scrollRevealElements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [hasMounted]);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   const handleOpenAuth = (mode: "login" | "signup") => {
     setAuthMode(mode);
@@ -146,63 +185,62 @@ export default function SaaSLandingPage() {
     }, 1000);
   };
 
-  if (!hasMounted) {
-    return (
-      <div className="min-h-screen bg-[#090716] flex items-center justify-center font-sans">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 text-primary">
-            <Activity className="h-6 w-6 animate-radar" />
-          </div>
-          <span className="font-mono text-xs uppercase tracking-widest text-[#a6a3bf]">Aetheric Telemetry Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-transparent text-[#f1f0f7] font-sans antialiased overflow-x-hidden selection:bg-primary/20 selection:text-white relative bg-dot-pattern">
+    <div className="min-h-screen bg-transparent text-slate-900 dark:text-[#f1f0f7] font-sans antialiased overflow-x-hidden relative bg-dot-pattern">
       
-      {/* ═══════════════════════════════════════════════════════
-          2D LIQUID METABALL BACKGROUND (ANIMATED & SMOOTH)
-          ═══════════════════════════════════════════════════════ */}
+      {/* 2D LIQUID METABALL BACKGROUND */}
       <div className="liquid-bg-container" aria-hidden="true" />
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 1 — HEADER (NAVBAR)
-          ═══════════════════════════════════════════════════════ */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#090716]/65 backdrop-blur-md border-b border-white/5 transition-all duration-300">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-6 md:px-12 py-5">
+      {/* HEADER / NAVBAR */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-[#090716]/65 backdrop-blur-md border-b border-slate-100 dark:border-white/5 transition-all duration-300">
+        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-6 md:px-12 py-4">
           {/* Logo (left) */}
           <Link href="/" className="flex items-center gap-3 group select-none">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-sm transition-transform group-hover:scale-105 duration-200">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <div className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-gradient-to-br from-[#AEF597] to-[#A8F690] text-slate-950 shadow-md font-bold transition-transform group-hover:scale-105 duration-200">
+              <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="font-hanken font-bold text-lg text-white tracking-tight">
-              Trend Fatigue Engine <span className="text-primary font-black">AI</span>
+            <span className="font-hanken font-bold text-lg text-slate-900 dark:text-white tracking-tight">
+              Trend Fatigue Engine <span className="text-[#AEF597] font-black">AI</span>
             </span>
           </Link>
 
           {/* Links (middle) */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#process" className="font-sans text-xs font-bold text-[#a6a3bf] hover:text-white transition-colors uppercase tracking-wider">Process</a>
-            <a href="#capabilities" className="font-sans text-xs font-bold text-[#a6a3bf] hover:text-white transition-colors uppercase tracking-wider">Capabilities</a>
-            <a href="#pricing" className="font-sans text-xs font-bold text-[#a6a3bf] hover:text-white transition-colors uppercase tracking-wider">Pricing</a>
-            <a href="#insights" className="font-sans text-xs font-bold text-[#a6a3bf] hover:text-white transition-colors uppercase tracking-wider">Insights</a>
+            <a href="#process" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Process</a>
+            <a href="#capabilities" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Capabilities</a>
+            <a href="#pricing" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Pricing</a>
+            <a href="#insights" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Insights</a>
           </nav>
 
-          {/* Right CTA - Serious Rounded Buttons (No Pills) */}
+          {/* Right Actions & theme switcher */}
           <div className="flex items-center gap-5">
+            {/* Social Icons */}
+            <div className="hidden lg:flex items-center gap-3.5 text-slate-400 dark:text-slate-500">
+              <a href="#" className="hover:text-slate-600 dark:hover:text-white transition-colors"><InstagramIcon /></a>
+              <a href="#" className="hover:text-slate-600 dark:hover:text-white transition-colors"><TikTokIcon /></a>
+              <a href="#" className="hover:text-slate-600 dark:hover:text-white transition-colors"><TwitterIcon /></a>
+            </div>
+
+            {/* Light/Dark Mode Switcher */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-650 dark:text-slate-300 hover:text-slate-955 dark:hover:text-white transition-all duration-200"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+            </button>
+
             <button
               onClick={() => handleOpenAuth("login")}
-              className="font-sans text-xs font-bold text-[#a6a3bf] hover:text-white transition-colors uppercase tracking-wider"
+              className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider"
             >
               Sign In
             </button>
             <button
               onClick={() => handleOpenAuth("signup")}
-              className="px-5 py-2.5 bg-brand-gradient hover:shadow-button-glow text-white font-bold rounded-lg text-xs transition-all duration-200 active:scale-95 uppercase tracking-wider shadow-sm"
+              className="px-5 py-2.5 bg-brand-gradient hover:shadow-button-glow text-slate-950 font-bold rounded-lg text-xs transition-all duration-200 active:scale-95 uppercase tracking-wider shadow-sm"
             >
               Get Access
             </button>
@@ -210,30 +248,28 @@ export default function SaaSLandingPage() {
         </div>
       </header>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 2 — HERO SECTION
-          ═══════════════════════════════════════════════════════ */}
+      {/* HERO SECTION */}
       <section className="pt-36 pb-12 px-6 text-center max-w-[1200px] mx-auto relative select-none">
         <div className="space-y-8 animate-fade-in-up">
-          {/* Analysis Badge/Chip */}
-          <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#090716]/65 backdrop-blur-sm px-4 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.1)]">
-            <div className="h-2 w-2 rounded-full bg-primary animate-radar" />
-            <span className="font-mono text-[10px] font-semibold text-[#f1f0f7] uppercase tracking-widest">
+          {/* Analysis Badge/Chip in Soft Green */}
+          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-[#090716]/65 backdrop-blur-sm px-4 py-2 shadow-sm">
+            <div className="h-2 w-2 rounded-full bg-[#AEF597] animate-radar" />
+            <span className="font-mono text-[10px] font-semibold text-slate-700 dark:text-[#f1f0f7] uppercase tracking-widest">
               ⚡ 100 ANALYSES - 2/20 FREE REMAINS
             </span>
           </div>
 
           {/* Display Headline */}
-          <h1 className="font-hanken font-bold text-5xl md:text-7xl text-white tracking-tight leading-[1.05] max-w-4xl mx-auto">
+          <h1 className="font-hanken font-bold text-[52px] md:text-[82px] text-slate-950 dark:text-white tracking-tighter leading-[1.03] max-w-5xl mx-auto">
             Stop Chasing Trends.
             <br />
-            <span className="text-gradient-brand">
+            <span className="text-[#AEF597]">
               Start Predicting Them.
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="font-sans text-lg md:text-xl text-[#a6a3bf] max-w-2xl mx-auto leading-relaxed font-normal">
+          <p className="font-sans text-lg md:text-[22px] text-slate-650 dark:text-[#a6a3bf] max-w-3xl mx-auto leading-relaxed font-normal">
             A mathematical layer over the chaos of culture. Our engine detects the moment interest peaks and fatigue begins—before your competitors even notice.
           </p>
 
@@ -241,13 +277,13 @@ export default function SaaSLandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <button
               onClick={() => handleOpenAuth("signup")}
-              className="w-full sm:w-auto px-8 py-3.5 bg-brand-gradient hover:shadow-button-glow text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95"
+              className="w-full sm:w-auto px-8 py-3.5 bg-brand-gradient hover:shadow-button-glow text-slate-950 font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95"
             >
               Start Predicting
             </button>
             <a
               href="#process"
-              className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-sm text-center"
+              className="w-full sm:w-auto px-8 py-3.5 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-sm text-center"
             >
               View Demo
             </a>
@@ -255,25 +291,21 @@ export default function SaaSLandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 3 — WAVESHIFT TELEMETRY DASHBOARD PREVIEW
-          ═══════════════════════════════════════════════════════ */}
+      {/* WAVESHIFT TELEMETRY DASHBOARD PREVIEW (Hard Dark Panel) */}
       <section className="pb-24 px-6 max-w-[1100px] mx-auto scroll-reveal">
-        {/* Dynamic Glass Panel wrapper */}
-        <div className="glass-panel-heavy rounded-xl p-6 sm:p-8 shadow-soft border border-white/10 relative overflow-hidden group">
+        <div className="relative bg-[#0c0f1d] border border-white/10 rounded-xl p-6 sm:p-8 shadow-2xl text-white overflow-hidden group">
           
-          {/* Subtle light effect top border */}
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary via-[#ba1a1a] to-transparent opacity-85" />
+          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-[#AEF597] via-pink-500 to-transparent opacity-85" />
 
-          {/* Tab buttons to show AI is working interactively */}
+          {/* Tab selector header */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-5 mb-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary border border-primary/10">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#AEF597]/15 text-[#AEF597] border border-[#AEF597]/10">
                 <Activity className="h-5 w-5 animate-radar" />
               </span>
-              <div>
+              <div className="text-left">
                 <span className="block font-hanken font-bold text-sm text-white leading-tight">WaveShift Telemetry Dashboard</span>
-                <span className="block font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider mt-0.5">Engine Status: LIVE LISTENING</span>
+                <span className="block font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Engine Status: LIVE LISTENING</span>
               </div>
             </div>
 
@@ -286,7 +318,7 @@ export default function SaaSLandingPage() {
                   className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all duration-200 ${
                     activeTrendIdx === idx
                       ? "bg-white/10 text-white shadow-sm"
-                      : "text-[#a6a3bf] hover:text-white"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   {td.title.split(" ")[0]}
@@ -297,21 +329,46 @@ export default function SaaSLandingPage() {
 
           {/* Primary Metric Displays */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-left">
-            <div className="bg-white/5 p-4 border border-white/5 rounded-lg">
-              <span className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider block mb-1">Target Trend</span>
-              <span className="font-hanken font-semibold text-base text-white block">{currentTrend.title}</span>
+            {/* KPI Card 1 */}
+            <div className="bg-white/5 p-5 border border-white/10 rounded-xl relative overflow-hidden group/kpi cursor-pointer hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Target Trend</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#AEF597] ring-pulse-green" />
+              </div>
+              <span className="font-hanken font-bold text-lg md:text-[20px] text-white block truncate">{currentTrend.title}</span>
             </div>
-            <div className="bg-white/5 p-4 border border-white/5 rounded-lg">
-              <span className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider block mb-1">Fatigue Index</span>
-              <span className="font-hanken font-bold text-lg text-[#f43f5e] block">{currentTrend.fatigue}</span>
+
+            {/* KPI Card 2 */}
+            <div className="bg-white/5 p-5 border border-white/10 rounded-xl relative overflow-hidden group/kpi cursor-pointer hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Fatigue Index</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 ring-pulse-green" style={{ animationDelay: "0.5s" }} />
+              </div>
+              <span className="font-hanken font-extrabold text-2xl md:text-[28px] text-[#f43f5e] block tracking-tight">{currentTrend.fatigue}</span>
             </div>
-            <div className="bg-white/5 p-4 border border-white/5 rounded-lg">
-              <span className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider block mb-1">Trend Velocity</span>
-              <span className="font-hanken font-semibold text-base text-[#f43f5e] block">{currentTrend.change} ({currentTrend.status})</span>
+
+            {/* KPI Card 3 */}
+            <div className="bg-white/5 p-5 border border-white/10 rounded-xl relative overflow-hidden group/kpi cursor-pointer hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Trend Velocity</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 ring-pulse-green" style={{ animationDelay: "1s" }} />
+              </div>
+              <span className="font-hanken font-bold text-lg md:text-[19px] text-[#f43f5e] block tracking-tight">
+                {currentTrend.change} <span className="text-[11px] font-normal text-slate-400 font-sans block">{currentTrend.status}</span>
+              </span>
             </div>
-            <div className="bg-white/5 p-4 border border-white/5 rounded-lg">
-              <span className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider block mb-1">AI Recommendation</span>
-              <span className="font-hanken font-semibold text-base text-sage block">{currentTrend.remedy}</span>
+
+            {/* KPI Card 4 */}
+            <div className="bg-white/5 p-5 border border-white/10 rounded-xl relative overflow-hidden group/kpi cursor-pointer hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">AI Recommendation</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-[#AEF597] ring-pulse-green" style={{ animationDelay: "1.5s" }} />
+              </div>
+              <span className="font-hanken font-bold text-lg md:text-[19px] text-[#AEF597] block leading-snug">{currentTrend.remedy}</span>
             </div>
           </div>
 
@@ -330,14 +387,14 @@ export default function SaaSLandingPage() {
               <span className="font-mono text-[9px] font-bold text-[#f43f5e] bg-[#ffdad6]/10 border border-[#f43f5e]/20 px-2 py-0.5 rounded uppercase">
                 FATIGUED NICHE: {currentTrend.title}
               </span>
-              <span className="font-mono text-[9px] font-bold text-sage bg-[#f4fcf5]/10 border border-sage/20 px-2 py-0.5 rounded uppercase">
+              <span className="font-mono text-[9px] font-bold text-[#AEF597] bg-[#AEF597]/10 border border-[#AEF597]/20 px-2 py-0.5 rounded uppercase">
                 GROWING OPPORTUNITY: {currentTrend.alternative}
               </span>
             </div>
 
             <div className="absolute top-4 right-4 z-10">
               <span className="flex items-center gap-1.5 font-mono text-[9px] font-bold text-[#f1f0f7] uppercase tracking-widest bg-white/5 shadow-sm border border-white/5 px-2 py-1 rounded">
-                <span className="h-1.5 w-1.5 rounded-full bg-sage animate-ping" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#AEF597] animate-ping" />
                 SEMI-STABLE METADATA ACTIVE
               </span>
             </div>
@@ -353,8 +410,8 @@ export default function SaaSLandingPage() {
                     <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
                   </linearGradient>
                   <linearGradient id="upGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#5d5cff" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#5d5cff" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="#AEF597" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#AEF597" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -372,7 +429,7 @@ export default function SaaSLandingPage() {
                   className="opacity-70"
                 />
 
-                {/* Alternate rising trend fill and path */}
+                {/* Alternate rising trend fill and path in soft green #AEF597 */}
                 <path
                   d={`${currentTrend.pathUp} L 600 300 L 0 300 Z`}
                   fill="url(#upGradient)"
@@ -380,7 +437,7 @@ export default function SaaSLandingPage() {
                 <path
                   d={currentTrend.pathUp}
                   fill="none"
-                  stroke="#5d5cff"
+                  stroke="#AEF597"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                 />
@@ -388,15 +445,15 @@ export default function SaaSLandingPage() {
                 {/* Crossover / Fatigue Event Intersection Node */}
                 <g transform={`translate(${currentTrend.crossover.x}, ${currentTrend.crossover.y})`}>
                   {/* Outer glowing pulsing circle */}
-                  <circle r="16" fill="#5d5cff" fillOpacity="0.15" className="animate-ping" />
-                  <circle r="8" fill="#5d5cff" fillOpacity="0.25" />
+                  <circle r="16" fill="#AEF597" fillOpacity="0.15" className="animate-ping" />
+                  <circle r="8" fill="#AEF597" fillOpacity="0.25" />
                   
-                  {/* Highly polished 3D glowing sphere node */}
+                  {/* Highly polished sphere node */}
                   <circle r="5" fill="url(#brandSphereGrad)" />
                   <radialGradient id="brandSphereGrad" cx="30%" cy="30%" r="70%">
-                    <stop offset="0%" stopColor="#ff9eb5" />
-                    <stop offset="40%" stopColor="#a855f7" />
-                    <stop offset="100%" stopColor="#5d5cff" />
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="40%" stopColor="#AEF597" />
+                    <stop offset="100%" stopColor="#10b981" />
                   </radialGradient>
                 </g>
               </svg>
@@ -409,14 +466,14 @@ export default function SaaSLandingPage() {
                   top: `${(currentTrend.crossover.y / 300) * 100 - 15}%`,
                   transform: "translate(-50%, -100%)"
                 }}
-                className="bg-[#14102c] text-white font-mono text-[9px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none select-none tracking-wider whitespace-nowrap z-20 border border-[#5d5cff]/30"
+                className="bg-[#14102c] text-white font-mono text-[9px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none select-none tracking-wider whitespace-nowrap z-20 border border-[#AEF597]/30"
               >
                 FATIGUE EVENT POINT ({currentTrend.change})
               </div>
             </div>
 
             {/* Bottom time indicators */}
-            <div className="flex items-center justify-between border-t border-white/5 pt-3 font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-wider">
+            <div className="flex items-center justify-between border-t border-white/5 pt-3.5 font-mono text-[9px] font-bold text-slate-400 uppercase tracking-wider">
               <span>DAY -30 (Peak Interest)</span>
               <span className="text-white font-black">DAY 0 (Event Horizon)</span>
               <span>DAY +30 (Full Saturation)</span>
@@ -425,60 +482,55 @@ export default function SaaSLandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 4 — PROCESS / METHODOLOGY (100% VISUALLY MATCHING)
-          ═══════════════════════════════════════════════════════ */}
-      <section id="process" className="py-24 px-6 bg-[#090716]/30 border-y border-white/5 scroll-reveal text-center relative overflow-hidden">
+      {/* PROCESS / METHODOLOGY (Original curved glowing pipeline & 3D Glass bricks) */}
+      <section id="process" className="py-24 px-6 bg-slate-50/50 dark:bg-[#090716]/30 border-y border-slate-100 dark:border-white/5 scroll-reveal text-center relative overflow-hidden">
         <div className="max-w-[1200px] mx-auto space-y-16">
           
           <div className="space-y-3">
-            <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block">OUR METHODOLOGY</span>
-            <h2 className="font-hanken font-bold text-3xl md:text-4xl text-white tracking-tight">
+            <span className="font-mono text-xs font-bold text-[#AEF597] uppercase tracking-widest block font-bold">OUR METHODOLOGY</span>
+            <h2 className="font-hanken font-bold text-3xl md:text-4xl text-slate-900 dark:text-white tracking-tight">
               Simple Workflow, Complex Intelligence
             </h2>
           </div>
 
-          {/* Workflow Steps layout with Small Icon Badges */}
+          {/* Workflow Steps layout */}
           <div className="grid gap-10 md:grid-cols-3 max-w-4xl mx-auto relative z-10 text-center">
             
             {/* Step 1: Ingest */}
             <div className="flex flex-col items-center space-y-3.5">
-              <div className="h-10 w-10 bg-primary/15 text-primary border border-primary/10 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/10 rounded-lg flex items-center justify-center shadow-sm">
                 <Database className="h-4.5 w-4.5" />
               </div>
-              <h3 className="font-hanken font-bold text-lg text-white leading-tight">Ingest</h3>
-              <p className="font-sans text-xs leading-relaxed text-[#a6a3bf] max-w-[280px]">
+              <h3 className="font-hanken font-bold text-lg text-slate-900 dark:text-white leading-tight">Ingest</h3>
+              <p className="font-sans text-xs leading-relaxed text-slate-500 dark:text-[#a6a3bf] max-w-[285px]">
                 We vacuum raw data from social graphs, search inputs, and transaction logs across 40+ global nodes.
               </p>
             </div>
 
             {/* Step 2: Analyze */}
             <div className="flex flex-col items-center space-y-3.5">
-              <div className="h-10 w-10 bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/10 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/10 rounded-lg flex items-center justify-center shadow-sm">
                 <Cpu className="h-4.5 w-4.5 animate-radar" />
               </div>
-              <h3 className="font-hanken font-bold text-lg text-white leading-tight">Analyze</h3>
-              <p className="font-sans text-xs leading-relaxed text-[#a6a3bf] max-w-[280px]">
+              <h3 className="font-hanken font-bold text-lg text-slate-900 dark:text-white leading-tight">Analyze</h3>
+              <p className="font-sans text-xs leading-relaxed text-slate-500 dark:text-[#a6a3bf] max-w-[285px]">
                 Proprietary AI filters noise through a cognitive fatigue lens to find the true saturation point.
               </p>
             </div>
 
             {/* Step 3: Predict */}
             <div className="flex flex-col items-center space-y-3.5">
-              <div className="h-10 w-10 bg-sage/15 text-sage border border-sage/10 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/10 rounded-lg flex items-center justify-center shadow-sm">
                 <TrendingUp className="h-4.5 w-4.5" />
               </div>
-              <h3 className="font-hanken font-bold text-lg text-white leading-tight">Predict</h3>
-              <p className="font-sans text-xs leading-relaxed text-[#a6a3bf] max-w-[280px]">
+              <h3 className="font-hanken font-bold text-lg text-slate-900 dark:text-white leading-tight">Predict</h3>
+              <p className="font-sans text-xs leading-relaxed text-slate-500 dark:text-[#a6a3bf] max-w-[285px]">
                 Receive actionable timelines on when to pivot before the market becomes exhausted.
               </p>
             </div>
-
           </div>
 
-          {/* ═══════════════════════════════════════════════════════
-              THE GLOWING CURVED PIPELINE & 3D GLASS BRICKS
-              ═══════════════════════════════════════════════════════ */}
+          {/* GLOWING CURVED PIPELINE & 3D GLASS BRICKS (Soft Green styled) */}
           <div className="hidden md:block max-w-[840px] mx-auto h-[200px] relative mt-12 select-none">
             {/* Background glowing flow SVG */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 800 200">
@@ -491,7 +543,7 @@ export default function SaaSLandingPage() {
                 fill="none"
               />
               
-              {/* Pulsing data line core */}
+              {/* Pulsing data line core using #AEF597 and emerald */}
               <path
                 d="M 120 70 C 260 70, 260 150, 400 150 C 540 150, 540 70, 680 70"
                 stroke="url(#workflowPipelineGrad)"
@@ -504,67 +556,60 @@ export default function SaaSLandingPage() {
 
               <defs>
                 <linearGradient id="workflowPipelineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#a855f7" />
-                  <stop offset="50%" stopColor="#ec4899" />
-                  <stop offset="100%" stopColor="#3b82f6" />
+                  <stop offset="0%" stopColor="#AEF597" />
+                  <stop offset="50%" stopColor="#A8F690" />
+                  <stop offset="100%" stopColor="#10b981" />
                 </linearGradient>
               </defs>
             </svg>
 
-            {/* Floating 3D-styled glass brick 1 (Ingest: Purple/Magenta) */}
+            {/* Floating 3D-styled glass brick 1 (Ingest) */}
             <div 
               className="absolute left-[7%] top-[15px] w-24 h-24 glass-panel-heavy rounded-xl flex items-center justify-center shadow-2xl border border-white/10 animate-float"
               style={{ animationDelay: "0s" }}
             >
-              {/* Inner glowing radial backplate */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-[#ba1a1a]/15 to-transparent rounded-xl pointer-events-none" />
-              <svg className="w-10 h-10 text-white/90 drop-shadow-[0_0_12px_rgba(168,85,247,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#AEF597]/20 via-[#A8F690]/10 to-transparent rounded-xl pointer-events-none" />
+              <svg className="w-10 h-10 text-slate-800 dark:text-white drop-shadow-[0_0_12px_rgba(174,245,151,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </div>
 
-            {/* Floating 3D-styled glass brick 2 (Analyze: Purple/Violet) */}
+            {/* Floating 3D-styled glass brick 2 (Analyze) */}
             <div 
               className="absolute left-[44%] top-[95px] w-24 h-24 glass-panel-heavy rounded-xl flex items-center justify-center shadow-2xl border border-white/10 animate-float"
               style={{ animationDelay: "1.5s" }}
             >
-              {/* Inner glowing radial backplate */}
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-500/15 to-transparent rounded-xl pointer-events-none" />
-              <svg className="w-9 h-9 text-white/90 drop-shadow-[0_0_12px_rgba(124,58,237,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#AEF597]/20 via-emerald-500/10 to-transparent rounded-xl pointer-events-none" />
+              <svg className="w-9 h-9 text-slate-800 dark:text-white drop-shadow-[0_0_12px_rgba(174,245,151,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="12" cy="12" r="9" />
                 <circle cx="12" cy="12" r="4" />
                 <path strokeLinecap="round" d="M12 2v2M12 20v2M2 12h2M20 12h2" />
               </svg>
             </div>
 
-            {/* Floating 3D-styled glass brick 3 (Predict: Blue/Cyan) */}
+            {/* Floating 3D-styled glass brick 3 (Predict) */}
             <div 
               className="absolute right-[7%] top-[15px] w-24 h-24 glass-panel-heavy rounded-xl flex items-center justify-center shadow-2xl border border-white/10 animate-float"
               style={{ animationDelay: "3.0s" }}
             >
-              {/* Inner glowing radial backplate */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 via-cyan-500/15 to-transparent rounded-xl pointer-events-none" />
-              <svg className="w-9 h-9 text-white/90 drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#AEF597]/20 via-teal-500/10 to-transparent rounded-xl pointer-events-none" />
+              <svg className="w-9 h-9 text-slate-800 dark:text-white drop-shadow-[0_0_12px_rgba(174,245,151,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5l6-6 4 4 8-8M21 6.5H15v6" />
               </svg>
             </div>
-
           </div>
-
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 5 — CAPABILITIES
-          ═══════════════════════════════════════════════════════ */}
-      <section id="capabilities" className="py-24 px-6 bg-[#090716]/20 border-b border-white/5 scroll-reveal">
-        <div className="max-w-[1200px] mx-auto space-y-16 text-center">
+      {/* CAPABILITIES SECTION */}
+      <section id="capabilities" className="py-24 px-6 max-w-[1200px] mx-auto scroll-reveal">
+        <div className="space-y-16 text-center">
           <div className="space-y-4 max-w-3xl mx-auto">
-            <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block">SYSTEM FEATURES</span>
-            <h2 className="font-hanken font-bold text-3xl md:text-4xl text-white tracking-tight leading-tight">
+            <span className="font-mono text-xs font-bold text-[#AEF597] uppercase tracking-widest block font-bold">SYSTEM FEATURES</span>
+            <h2 className="font-hanken font-bold text-3xl md:text-4xl text-slate-900 dark:text-white tracking-tight leading-tight">
               Capabilities Engineered For Creators
             </h2>
-            <p className="font-sans text-base text-[#a6a3bf] leading-relaxed">
+            <p className="font-sans text-base text-slate-655 dark:text-[#a6a3bf] leading-relaxed">
               Deep-tech features packaged into a minimalist interface designed for strategic clarity.
             </p>
           </div>
@@ -573,247 +618,250 @@ export default function SaaSLandingPage() {
           <div className="grid gap-8 sm:grid-cols-2 max-w-4xl mx-auto text-left">
             
             {/* Card 1 */}
-            <div className="bg-white/5 border border-white/5 rounded-lg p-6 space-y-4 hover:border-primary/20 hover:shadow-soft transition-all duration-300 group">
-              <div className="h-10 w-10 bg-primary/10 text-primary border border-primary/15 rounded-lg flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-white">
-                <Cpu className="h-5 w-5" />
+            <div className="bg-white dark:bg-[#101424]/40 border border-slate-200 dark:border-white/10 rounded-2xl p-7 relative overflow-hidden group/cap hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover/cap:opacity-40 transition-opacity duration-350" />
+              <div className="h-11 w-11 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover/cap:scale-110 shadow-sm">
+                <Cpu className="h-5.5 w-5.5" />
               </div>
-              <div>
-                <span className="font-mono text-[10px] font-bold text-[#8f8ca8] uppercase tracking-widest block mb-1">
+              <div className="pt-5 text-left">
+                <span className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest block mb-1.5">
                   MODULE // TELEMETRY
                 </span>
-                <h3 className="font-hanken font-semibold text-lg text-white mb-2">Pattern Recognition</h3>
-                <p className="font-sans text-sm text-[#a6a3bf] leading-relaxed">
+                <h3 className="font-hanken font-bold text-[20px] text-slate-950 dark:text-white mb-2.5">Pattern Recognition</h3>
+                <p className="font-sans text-sm leading-relaxed text-slate-500 dark:text-[#a6a3bf]">
                   Neural networks identify recurring cultural cycles with 94% historical accuracy across multiple verticals.
                 </p>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white/5 border border-white/5 rounded-lg p-6 space-y-4 hover:border-primary/20 hover:shadow-soft transition-all duration-300 group">
-              <div className="h-10 w-10 bg-primary/10 text-primary border border-primary/15 rounded-lg flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-white">
-                <Activity className="h-5 w-5" />
+            <div className="bg-white dark:bg-[#101424]/40 border border-slate-200 dark:border-white/10 rounded-2xl p-7 relative overflow-hidden group/cap hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover/cap:opacity-40 transition-opacity duration-350" />
+              <div className="h-11 w-11 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover/cap:scale-110 shadow-sm">
+                <Activity className="h-5.5 w-5.5 animate-radar" />
               </div>
-              <div>
-                <span className="font-mono text-[10px] font-bold text-[#8f8ca8] uppercase tracking-widest block mb-1">
+              <div className="pt-5 text-left">
+                <span className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest block mb-1.5">
                   NODES // LIVE MONITOR
                 </span>
-                <h3 className="font-hanken font-semibold text-lg text-white mb-2">Real-time Monitoring</h3>
-                <p className="font-sans text-sm text-[#a6a3bf] leading-relaxed">
+                <h3 className="font-hanken font-bold text-[20px] text-slate-950 dark:text-white mb-2.5">Real-time Monitoring</h3>
+                <p className="font-sans text-sm leading-relaxed text-slate-500 dark:text-[#a6a3bf]">
                   Live streaming data analysis with sub-second latency for immediate strategic responsiveness.
                 </p>
               </div>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-white/5 border border-white/5 rounded-lg p-6 space-y-4 hover:border-primary/20 hover:shadow-soft transition-all duration-300 group">
-              <div className="h-10 w-10 bg-primary/10 text-primary border border-primary/15 rounded-lg flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-white">
-                <LineChart className="h-5 w-5" />
+            <div className="bg-white dark:bg-[#101424]/40 border border-slate-200 dark:border-white/10 rounded-2xl p-7 relative overflow-hidden group/cap hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover/cap:opacity-40 transition-opacity duration-350" />
+              <div className="h-11 w-11 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover/cap:scale-110 shadow-sm">
+                <LineChart className="h-5.5 w-5.5" />
               </div>
-              <div>
-                <span className="font-mono text-[10px] font-bold text-[#8f8ca8] uppercase tracking-widest block mb-1">
+              <div className="pt-5 text-left">
+                <span className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest block mb-1.5">
                   MODELS // PREDICTOR
                 </span>
-                <h3 className="font-hanken font-semibold text-lg text-white mb-2">Predictive Analysis</h3>
-                <p className="font-sans text-sm text-[#a6a3bf] leading-relaxed">
+                <h3 className="font-hanken font-bold text-[20px] text-slate-950 dark:text-white mb-2.5">Predictive Analysis</h3>
+                <p className="font-sans text-sm leading-relaxed text-slate-500 dark:text-[#a6a3bf]">
                   Forecasting the &quot;fatigue event&quot; window 14-20 days before it materializes in mainstream media.
                 </p>
               </div>
             </div>
 
             {/* Card 4 */}
-            <div className="bg-white/5 border border-white/5 rounded-lg p-6 space-y-4 hover:border-primary/20 hover:shadow-soft transition-all duration-300 group">
-              <div className="h-10 w-10 bg-primary/10 text-primary border border-primary/15 rounded-lg flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-white">
-                <Terminal className="h-5 w-5" />
+            <div className="bg-white dark:bg-[#101424]/40 border border-slate-200 dark:border-white/10 rounded-2xl p-7 relative overflow-hidden group/cap hover-glow-green transition-all duration-300">
+              <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-0 group-hover/cap:opacity-40 transition-opacity duration-350" />
+              <div className="h-11 w-11 bg-[#AEF597]/15 text-lime-700 dark:text-[#AEF597] border border-[#AEF597]/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover/cap:scale-110 shadow-sm">
+                <Sparkles className="h-5.5 w-5.5" />
               </div>
-              <div>
-                <span className="font-mono text-[10px] font-bold text-[#8f8ca8] uppercase tracking-widest block mb-1">
+              <div className="pt-5 text-left">
+                <span className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest block mb-1.5">
                   SYSTEMS // SYNTHESIS
                 </span>
-                <h3 className="font-hanken font-semibold text-lg text-white mb-2">Content Optimization</h3>
-                <p className="font-sans text-sm text-[#a6a3bf] leading-relaxed">
+                <h3 className="font-hanken font-bold text-[20px] text-slate-950 dark:text-white mb-2.5">Content Optimization</h3>
+                <p className="font-sans text-sm leading-relaxed text-slate-500 dark:text-[#a6a3bf]">
                   Automated hooks and narrative structures that resonate with the current &quot;energy&quot; of the trend.
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 6 — PRICING
-          ═══════════════════════════════════════════════════════ */}
+      {/* PRICING */}
       <section id="pricing" className="py-28 px-6 max-w-[1200px] mx-auto scroll-reveal text-center relative select-none">
         
         <div className="space-y-4 mb-16">
-          <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest block">PRICING PLANS</span>
-          <h2 className="font-hanken font-bold text-3xl md:text-4xl text-white tracking-tight">Simple Access</h2>
-          <p className="font-sans text-base text-[#a6a3bf] max-w-xl mx-auto">Scale as your insight needs grow.</p>
+          <span className="font-mono text-xs font-bold text-[#AEF597] uppercase tracking-widest block font-bold">PRICING PLANS</span>
+          <h2 className="font-hanken font-bold text-3xl md:text-4xl text-slate-905 dark:text-white tracking-tight">Simple Access</h2>
+          <p className="font-sans text-base text-slate-655 dark:text-[#a6a3bf] max-w-xl mx-auto">Scale as your insight needs grow.</p>
         </div>
 
-        {/* Apple-style Price Plan Card - Rounded Rect (No Pills) */}
-        <div className="max-w-[420px] mx-auto bg-[#0a071b]/60 border border-white/10 rounded-xl p-8 sm:p-10 shadow-soft space-y-6 text-left relative overflow-hidden group">
-          <div className="absolute top-0 inset-x-0 h-[3px] bg-brand-gradient" />
+        {/* Free Plan Card */}
+        <div className="max-w-[420px] mx-auto bg-white dark:bg-[#0a071b]/60 border border-slate-150 dark:border-white/10 rounded-2xl p-8 sm:p-10 shadow-lg dark:shadow-soft space-y-6 text-left relative overflow-hidden group">
+          <div className="absolute top-0 inset-x-0 h-[4px] bg-brand-gradient" />
           
-          <span className="font-mono text-[10px] font-bold text-[#8f8ca8] uppercase tracking-widest block">STARTER PLAN</span>
+          <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest block">STARTER PLAN</span>
           
-          <div className="flex items-baseline gap-1.5 border-b border-white/5 pb-4">
-            <span className="font-hanken font-bold text-5xl text-white tracking-tight">₹0</span>
-            <span className="font-sans text-sm text-[#a6a3bf] font-medium">/ month</span>
+          <div className="flex items-baseline gap-1.5 border-b border-slate-100 dark:border-white/5 pb-4">
+            <span className="font-hanken font-bold text-5xl text-slate-900 dark:text-white tracking-tight">₹0</span>
+            <span className="font-sans text-sm text-slate-500 dark:text-[#a6a3bf] font-medium">/ month</span>
           </div>
 
-          <p className="font-sans text-sm text-[#a6a3bf] leading-relaxed">
+          <p className="font-sans text-xs leading-relaxed text-slate-500 dark:text-[#a6a3bf]">
             Perfect for small teams and independent creators seeking to beat noise, align signals, and reversal metrics.
           </p>
           
           <button
             onClick={() => handleOpenAuth("signup")}
-            className="w-full py-3.5 bg-brand-gradient hover:shadow-button-glow text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 text-center"
+            className="w-full py-3.5 bg-brand-gradient hover:shadow-button-glow text-slate-955 font-bold rounded-lg text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 text-center"
           >
             Start Predicting
           </button>
 
-          <ul className="space-y-4 pt-6 border-t border-white/5 font-sans text-xs text-[#f1f0f7] font-medium">
+          <ul className="space-y-4 pt-6 border-t border-slate-100 dark:border-white/5 font-sans text-xs text-slate-700 dark:text-[#f1f0f7] font-medium">
             <li className="flex items-center gap-3">
-              <span className="h-5 w-5 bg-sage/20 text-sage rounded-md flex items-center justify-center">
-                <Check className="h-3 w-3" strokeWidth="3" />
+              <span className="h-5 w-5 bg-[#AEF597]/25 text-lime-800 dark:text-[#AEF597] rounded-md flex items-center justify-center">
+                <Check className="h-3 w-3" strokeWidth="3.5" />
               </span>
               5 analyses / day
             </li>
             <li className="flex items-center gap-3">
-              <span className="h-5 w-5 bg-sage/20 text-sage rounded-md flex items-center justify-center">
-                <Check className="h-3 w-3" strokeWidth="3" />
+              <span className="h-5 w-5 bg-[#AEF597]/25 text-lime-800 dark:text-[#AEF597] rounded-md flex items-center justify-center">
+                <Check className="h-3 w-3" strokeWidth="3.5" />
               </span>
               Basic trend insights
             </li>
             <li className="flex items-center gap-3">
-              <span className="h-5 w-5 bg-sage/20 text-sage rounded-md flex items-center justify-center">
-                <Check className="h-3 w-3" strokeWidth="3" />
+              <span className="h-5 w-5 bg-[#AEF597]/25 text-lime-800 dark:text-[#AEF597] rounded-md flex items-center justify-center">
+                <Check className="h-3 w-3" strokeWidth="3.5" />
               </span>
               Standard formulation hooks
             </li>
           </ul>
         </div>
 
-        <span className="block font-mono text-[10px] font-bold text-primary uppercase tracking-widest mt-12 hover:scale-105 transition-transform duration-200">
+        <span className="block font-mono text-[10px] font-bold text-lime-750 dark:text-[#AEF597] uppercase tracking-widest mt-12 hover:scale-105 transition-transform duration-200">
           PRO PLAN COMING SOON
         </span>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SECTION 7 — FOOTER
-          ═══════════════════════════════════════════════════════ */}
-      <footer id="insights" className="py-16 border-t border-white/10 bg-[#0a071b] text-left text-xs text-[#a6a3bf] relative select-none">
+      {/* FOOTER */}
+      <footer id="insights" className="py-16 border-t border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-[#0a071b] text-left text-xs text-slate-500 dark:text-[#a6a3bf] relative select-none">
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           
           {/* Col 1 */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3 group select-none">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white transition-transform group-hover:scale-105 duration-200">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-gradient-to-br from-[#AEF597] to-[#A8F690] text-slate-950 font-bold transition-transform group-hover:scale-105 duration-200">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <span className="font-hanken font-bold text-base text-white tracking-tight">Trend Fatigue Engine</span>
+              <span className="font-hanken font-bold text-base text-slate-900 dark:text-white tracking-tight">Trend Fatigue Engine</span>
             </Link>
-            <p className="font-sans text-xs text-[#a6a3bf] leading-relaxed">
+            <p className="font-sans text-xs text-slate-500 dark:text-[#a6a3bf] leading-relaxed">
               Analytical, Visionary, Calm. Predicting the future of audience attention metrics.
             </p>
-            <span className="block font-mono text-[9px] text-[#8f8ca8]">DESIGNED FOR DATA CREATORS // V1.0.4</span>
+            <span className="block font-mono text-[9px] text-slate-400 dark:text-[#8f8ca8]">DESIGNED FOR DATA CREATORS // V1.0.4</span>
           </div>
 
           {/* Col 2 */}
-          <div className="space-y-3">
-            <span className="font-mono text-[10px] font-bold text-white uppercase tracking-widest block">Legal Core</span>
-            <ul className="space-y-2 font-sans font-medium text-xs text-[#a6a3bf]">
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
+          <div className="space-y-3.5">
+            <span className="font-mono text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-widest block">Legal Core</span>
+            <ul className="space-y-2.5 font-sans font-medium text-xs">
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">Terms of Service</a></li>
             </ul>
           </div>
 
           {/* Col 3 */}
-          <div className="space-y-3">
-            <span className="font-mono text-[10px] font-bold text-white uppercase tracking-widest block">API Channels</span>
-            <ul className="space-y-2 font-sans font-medium text-xs text-[#a6a3bf]">
-              <li><a href="#" className="hover:text-primary transition-colors">API Documentation</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">System Status</a></li>
+          <div className="space-y-3.5">
+            <span className="font-mono text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-widest block">API Channels</span>
+            <ul className="space-y-2.5 font-sans font-medium text-xs">
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">API Documentation</a></li>
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">System Status</a></li>
             </ul>
           </div>
 
           {/* Col 4 */}
-          <div className="space-y-3">
-            <span className="font-mono text-[10px] font-bold text-white uppercase tracking-widest block">Strategy Desk</span>
-            <ul className="space-y-2 font-sans font-medium text-xs text-[#a6a3bf]">
-              <li><a href="#" className="hover:text-primary transition-colors">Contact Strategy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Enterprise Overlays</a></li>
+          <div className="space-y-3.5">
+            <span className="font-mono text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-widest block">Strategy Desk</span>
+            <ul className="space-y-2.5 font-sans font-medium text-xs">
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">Contact Strategy</a></li>
+              <li><a href="#" className="hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors">Enterprise Overlays</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="max-w-[1200px] mx-auto px-6 md:px-12 border-t border-white/5 pt-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-4 font-sans font-medium text-xs">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-12 border-t border-slate-200/50 dark:border-white/5 pt-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-4 font-sans font-medium text-xs">
           <span>&copy; 2026 Trend Fatigue Engine AI. All rights reserved.</span>
-          <span>Visionary attention telemetry layer.</span>
+          {/* Social Icons inside Footer */}
+          <div className="flex items-center gap-4 text-slate-400 dark:text-slate-500">
+            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><InstagramIcon /></a>
+            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><TikTokIcon /></a>
+            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><TwitterIcon /></a>
+          </div>
         </div>
       </footer>
 
-      {/* ═══════════════════════════════════════════════════════
-          INTERACTIVE AUTHENTICATION MODAL (🔐 SIGN UP & LOGIN FLOW)
-          ═══════════════════════════════════════════════════════ */}
+      {/* INTERACTIVE AUTHENTICATION MODAL */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Glass background overlay */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            className="absolute inset-0 bg-slate-950/60 dark:bg-black/60 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsAuthModalOpen(false)}
           />
 
-          {/* Interactive Modal Body - Standard rounded rects */}
-          <div className="relative bg-[#0d0a21] border border-white/10 rounded-xl p-8 w-full max-w-sm shadow-2xl z-10 overflow-hidden transform animate-fade-in-up">
+          {/* Interactive Modal Body */}
+          <div className="relative bg-white dark:bg-[#0c0a21] border border-slate-200 dark:border-white/10 rounded-2xl p-8 w-full max-w-sm shadow-2xl z-10 overflow-hidden transform animate-fade-in-up text-slate-900 dark:text-white">
+            <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[#AEF597] to-[#A8F690]" />
             
             {/* Close Button */}
             <button
               onClick={() => setIsAuthModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-[#a6a3bf] hover:text-white hover:bg-white/5 transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 dark:text-[#a6a3bf] hover:text-slate-905 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
 
             {/* Title Header */}
             <div className="text-center mb-6 space-y-1">
-              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 text-primary">
+              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-[#AEF597]/10 border border-[#AEF597]/20 text-lime-750 dark:text-[#AEF597]">
                 <Lock className="h-5 w-5" />
               </div>
-              <h3 className="font-hanken font-bold text-xl text-white tracking-tight">
+              <h3 className="font-hanken font-bold text-xl tracking-tight">
                 {authMode === "signup" ? "Create your workspace" : "Welcome back"}
               </h3>
-              <p className="font-sans text-xs text-[#a6a3bf] font-medium">
+              <p className="font-sans text-xs text-slate-500 dark:text-[#a6a3bf] font-medium leading-relaxed">
                 {authMode === "signup" ? "Get started with your free creator workspace today." : "Access your active listen nodes and telemetry."}
               </p>
             </div>
 
             {/* Error Message */}
             {authError && (
-              <div className="mb-4 rounded-lg bg-[#ffdad6]/10 border border-[#f43f5e]/20 p-3 text-xs font-bold text-[#f43f5e] flex items-center gap-2">
+              <div className="mb-4 rounded-lg bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 p-3 text-xs font-bold text-rose-600 dark:text-rose-450 flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>{authError}</span>
               </div>
             )}
 
             {/* Form Fields */}
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
+            <form onSubmit={handleAuthSubmit} className="space-y-4 text-left">
               
               {/* Name Field (Sign Up Only) */}
               {authMode === "signup" && (
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-widest">Workspace Operator</label>
+                  <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Workspace Operator</label>
                   <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8f8ca8]" />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
                     <input
                       type="text"
                       placeholder="Jane Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-white placeholder-[#8f8ca8] focus:outline-none focus:bg-[#090716] focus:border-primary transition-all focus:ring-1 focus:ring-primary/20"
+                      className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
                       required
                     />
                   </div>
@@ -822,15 +870,15 @@ export default function SaaSLandingPage() {
 
               {/* Email Field */}
               <div className="space-y-1.5">
-                <label className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-widest">Email Address</label>
+                <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8f8ca8]" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
                   <input
                     type="email"
                     placeholder="jane@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-white placeholder-[#8f8ca8] focus:outline-none focus:bg-[#090716] focus:border-primary transition-all focus:ring-1 focus:ring-primary/20"
+                    className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
                     required
                   />
                 </div>
@@ -838,15 +886,15 @@ export default function SaaSLandingPage() {
 
               {/* Password Field */}
               <div className="space-y-1.5">
-                <label className="font-mono text-[9px] font-bold text-[#8f8ca8] uppercase tracking-widest">Access Phrase</label>
+                <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Access Phrase</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8f8ca8]" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
                   <input
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-11 pl-10 pr-4 bg-white/5 border border-white/10 rounded-lg text-xs font-medium text-white placeholder-[#8f8ca8] focus:outline-none focus:bg-[#090716] focus:border-primary transition-all focus:ring-1 focus:ring-primary/20"
+                    className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
                     required
                   />
                 </div>
@@ -856,11 +904,11 @@ export default function SaaSLandingPage() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full h-11 bg-brand-gradient text-white font-bold rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-button-glow disabled:opacity-50"
+                className="w-full h-11 bg-brand-gradient text-slate-950 font-bold rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {authLoading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                    <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
@@ -877,8 +925,8 @@ export default function SaaSLandingPage() {
 
             {/* Social Authentication divider */}
             <div className="relative my-5 text-center select-none">
-              <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-white/5" />
-              <span className="relative bg-[#0d0a21] px-3 font-mono text-[8px] font-bold text-[#8f8ca8] uppercase tracking-widest">
+              <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-slate-200 dark:border-white/5" />
+              <span className="relative bg-white dark:bg-[#0c0a21] px-3 font-mono text-[8px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">
                 or continue with
               </span>
             </div>
@@ -886,7 +934,7 @@ export default function SaaSLandingPage() {
             {/* Google Authentication button */}
             <button
               onClick={handleAuthSubmit}
-              className="w-full h-11 border border-white/10 hover:bg-white/5 text-white font-bold rounded-lg text-xs flex items-center justify-center gap-2 transition-colors duration-200"
+              className="w-full h-11 border border-slate-200 dark:border-white/10 hover:bg-slate-55 dark:hover:bg-white/5 text-slate-750 dark:text-white font-bold rounded-lg text-xs flex items-center justify-center gap-2 transition-colors duration-200"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -916,12 +964,12 @@ export default function SaaSLandingPage() {
                   setAuthMode(authMode === "signup" ? "login" : "signup");
                   setAuthError("");
                 }}
-                className="font-sans text-xs font-bold text-[#8f8ca8] hover:text-primary transition-colors"
+                className="font-sans text-xs font-bold text-slate-500 dark:text-[#8f8ca8] hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors"
               >
                 {authMode === "signup" ? (
-                  <>Already have an account? <span className="text-primary underline">Sign In</span></>
+                  <>Already have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Sign In</span></>
                 ) : (
-                  <>Don&apos;t have an account? <span className="text-primary underline">Build Workspace</span></>
+                  <>Don&apos;t have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Build Workspace</span></>
                 )}
               </button>
             </div>

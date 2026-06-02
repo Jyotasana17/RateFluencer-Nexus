@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -22,6 +23,10 @@ const config: Config = {
         ghost: "#94A3B8",
         neon: "#00A3FF",
         crimson: "#DC2626",
+        
+        // Brand soft green accents
+        brandLime: "#AEF597",
+        limeNeon: "#A8F690",
 
         // Trend Fatigue Engine AI colors
         surface: '#ffffff',
@@ -90,21 +95,21 @@ const config: Config = {
       },
       boxShadow: {
         // Original shadows
-        glow: "0 0 44px rgba(109, 93, 252, 0.32)",
+        glow: "0 0 44px rgba(174, 245, 151, 0.32)",
         cyan: "0 0 36px rgba(0, 229, 255, 0.22)",
         glass: "inset 0 1px 0 rgba(255,255,255,0.16), 0 24px 80px rgba(0,0,0,0.35)",
-        neon: "0 0 30px rgba(0,163,255,0.4)",
-        "neon-lg": "0 0 50px rgba(0,163,255,0.5), 0 0 100px rgba(0,163,255,0.2)",
+        neon: "0 0 30px rgba(174, 245, 151, 0.4)",
+        "neon-lg": "0 0 50px rgba(174, 245, 151, 0.5), 0 0 100px rgba(174, 245, 151, 0.2)",
         
         // Brand design shadows
         soft: "0 12px 32px rgba(0,0,0,0.04)",
-        "premium-lift": "0 20px 48px rgba(93, 92, 255, 0.08)",
-        "button-glow": "0 8px 30px rgba(93, 92, 255, 0.25)"
+        "premium-lift": "0 20px 48px rgba(174, 245, 151, 0.08)",
+        "button-glow": "0 8px 30px rgba(174, 245, 151, 0.35)"
       },
       backgroundImage: {
         aurora:
-          "radial-gradient(circle at 18% 22%, rgba(109,93,252,.36), transparent 28%), radial-gradient(circle at 75% 12%, rgba(0,229,255,.24), transparent 24%), radial-gradient(circle at 60% 76%, rgba(20,241,149,.18), transparent 28%), linear-gradient(135deg, #050816 0%, #0A1022 42%, #0F172A 100%)",
-        'brand-gradient': "linear-gradient(135deg, #433fe5 0%, #5d5cff 50%, #ba1a1a 100%)"
+          "radial-gradient(circle at 18% 22%, rgba(174,245,151,.36), transparent 28%), radial-gradient(circle at 75% 12%, rgba(0,229,255,.24), transparent 24%), radial-gradient(circle at 60% 76%, rgba(20,241,149,.18), transparent 28%), linear-gradient(135deg, #050816 0%, #0A1022 42%, #0F172A 100%)",
+        'brand-gradient': "linear-gradient(135deg, #AEF597 0%, #A8F690 50%, #10b981 100%)"
       },
       animation: {
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",

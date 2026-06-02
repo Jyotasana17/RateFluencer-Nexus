@@ -47,7 +47,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${hanken.variable} ${jetbrains.variable}`}
+      className={`dark ${inter.variable} ${hanken.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
