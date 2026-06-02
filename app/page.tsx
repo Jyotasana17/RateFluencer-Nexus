@@ -19,8 +19,30 @@ import {
   LineChart,
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  Gem,
+  PlayCircle,
+  ShieldCheck,
+  WandSparkles,
+  ArrowDown
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
+import { Section } from "@/components/ui/section";
+import { GlassPanel } from "@/components/ui/glass-panel";
+import { InfluenceUniverseScene } from "@/components/landing/influence-scene";
+import { dnaMetrics, growthCurve, campaignForecast, agentSteps } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 // Social SVG Icons for brand accuracy
 const InstagramIcon = () => (
@@ -97,7 +119,7 @@ const TREND_DATASETS = [
 
 export default function SaaSLandingPage() {
   const router = useRouter();
-  const { setIsAuthenticated } = useNexusStore();
+  const { setIsAuthenticated, setIsAdmin } = useNexusStore();
 
   // Authentication states
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -107,6 +129,7 @@ export default function SaaSLandingPage() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
 
   // Telemetry Dashboard state
   const [activeTrendIdx, setActiveTrendIdx] = useState(0);
@@ -160,9 +183,10 @@ export default function SaaSLandingPage() {
     }
   };
 
-  const handleOpenAuth = (mode: "login" | "signup") => {
+  const handleOpenAuth = (mode: "login" | "signup", isAdminPortal = false) => {
     setAuthMode(mode);
     setAuthError("");
+    setIsAdminLogin(isAdminPortal);
     setIsAuthModalOpen(true);
   };
 
@@ -170,8 +194,23 @@ export default function SaaSLandingPage() {
     e.preventDefault();
     setAuthError("");
 
-    if (!email || !password || (authMode === "signup" && !name)) {
-      setAuthError("Please fill out all fields.");
+    if (!isAdminLogin) {
+      if (!email || !password || (authMode === "signup" && !name)) {
+        setAuthError("Please fill out all fields.");
+        return;
+      }
+    } else {
+      if (!password) {
+        setAuthError("Please enter the decryption access key.");
+        return;
+      }
+    }
+
+    const phrase = password.toLowerCase().trim();
+    const isAuthenticatingAdmin = phrase === "batman2026" || phrase === "admin123";
+
+    if (isAdminLogin && !isAuthenticatingAdmin) {
+      setAuthError("DECRYPTION FAILURE: ACCESS DENIED. ONLY REGISTERED SYSTEM ADMINISTRATORS MAY LOG IN THROUGH THE SECURITY ARCHWAY.");
       return;
     }
 
@@ -180,8 +219,15 @@ export default function SaaSLandingPage() {
     setTimeout(() => {
       setAuthLoading(false);
       setIsAuthenticated(true);
-      setIsAuthModalOpen(false);
-      router.push("/dashboard");
+      if (isAdminLogin && isAuthenticatingAdmin) {
+        setIsAdmin(true);
+        setIsAuthModalOpen(false);
+        router.push("/dashboard/admin");
+      } else {
+        setIsAdmin(false);
+        setIsAuthModalOpen(false);
+        router.push("/dashboard");
+      }
     }, 1000);
   };
 
@@ -208,10 +254,10 @@ export default function SaaSLandingPage() {
 
           {/* Links (middle) */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#process" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Process</a>
-            <a href="#capabilities" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Capabilities</a>
-            <a href="#pricing" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Pricing</a>
-            <a href="#insights" className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider">Insights</a>
+            <a href="#process" className="font-sans text-xs font-bold text-slate-800 dark:text-[#a6a3bf] hover:text-slate-950 dark:hover:text-white transition-colors uppercase tracking-wider">Process</a>
+            <a href="#capabilities" className="font-sans text-xs font-bold text-slate-800 dark:text-[#a6a3bf] hover:text-slate-950 dark:hover:text-white transition-colors uppercase tracking-wider">Capabilities</a>
+            <a href="#pricing" className="font-sans text-xs font-bold text-slate-800 dark:text-[#a6a3bf] hover:text-slate-950 dark:hover:text-white transition-colors uppercase tracking-wider">Pricing</a>
+            <a href="#insights" className="font-sans text-xs font-bold text-slate-800 dark:text-[#a6a3bf] hover:text-slate-950 dark:hover:text-white transition-colors uppercase tracking-wider">Insights</a>
           </nav>
 
           {/* Right Actions & theme switcher */}
@@ -226,7 +272,7 @@ export default function SaaSLandingPage() {
             {/* Light/Dark Mode Switcher */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-650 dark:text-slate-300 hover:text-slate-955 dark:hover:text-white transition-all duration-200"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-800 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white transition-all duration-200"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
@@ -234,7 +280,7 @@ export default function SaaSLandingPage() {
 
             <button
               onClick={() => handleOpenAuth("login")}
-              className="font-sans text-xs font-bold text-slate-650 dark:text-[#a6a3bf] hover:text-slate-955 dark:hover:text-white transition-colors uppercase tracking-wider"
+              className="font-sans text-xs font-bold text-slate-800 dark:text-[#a6a3bf] hover:text-slate-950 dark:hover:text-white transition-colors uppercase tracking-wider"
             >
               Sign In
             </button>
@@ -269,7 +315,7 @@ export default function SaaSLandingPage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="font-sans text-lg md:text-[22px] text-slate-650 dark:text-[#a6a3bf] max-w-3xl mx-auto leading-relaxed font-normal">
+          <p className="font-sans text-lg md:text-[22px] text-slate-800 dark:text-[#a6a3bf] max-w-3xl mx-auto leading-relaxed font-normal">
             A mathematical layer over the chaos of culture. Our engine detects the moment interest peaks and fatigue begins—before your competitors even notice.
           </p>
 
@@ -609,7 +655,7 @@ export default function SaaSLandingPage() {
             <h2 className="font-hanken font-bold text-3xl md:text-4xl text-slate-900 dark:text-white tracking-tight leading-tight">
               Capabilities Engineered For Creators
             </h2>
-            <p className="font-sans text-base text-slate-655 dark:text-[#a6a3bf] leading-relaxed">
+            <p className="font-sans text-base text-slate-800 dark:text-[#a6a3bf] leading-relaxed">
               Deep-tech features packaged into a minimalist interface designed for strategic clarity.
             </p>
           </div>
@@ -688,13 +734,227 @@ export default function SaaSLandingPage() {
         </div>
       </section>
 
+      {/* INFLUENCE DNA SECTION */}
+      <Section
+        id="influence-dna"
+        eyebrow="Influence DNA(TM)"
+        title="A living signature for every creator."
+        copy="The platform models creator trust, momentum, semantic fit, and audience response as a dynamic intelligence fingerprint."
+        className="scroll-reveal text-center relative select-none"
+      >
+        <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_.95fr] text-left">
+          <GlassPanel className="relative min-h-[520px] overflow-hidden p-4 sm:p-8 bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm">
+            <div className="absolute inset-0 opacity-40" />
+            <div className="relative h-[430px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={dnaMetrics}>
+                  <PolarGrid gridType="polygon" stroke="rgba(255,255,255,.14)" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#6B7280", fontSize: 12 }} />
+                  <Radar name="Creator DNA" dataKey="value" stroke="#AEF597" fill="#AEF597" fillOpacity={0.15} />
+                  <Tooltip
+                    contentStyle={{ background: "rgba(10,10,10,.95)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 8 }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="relative grid grid-cols-3 gap-3">
+              {dnaMetrics.map((item) => (
+                <div key={item.subject} className="rounded-xl border border-white/5 bg-black/40 p-3">
+                  <p className="text-[10px] uppercase tracking-wider text-slate-500">{item.subject}</p>
+                  <p className="mt-1 text-lg font-black text-[#AEF597]">{item.value}%</p>
+                </div>
+              ))}
+            </div>
+          </GlassPanel>
+          <div className="space-y-4">
+            {[
+              ["Authenticity", "Detects sponsored-content fatigue, comment entropy, and trust decay before audiences disengage."],
+              ["Brand Fit", "Compares brand memory structures against creator language, community values, and purchase triggers."],
+              ["Virality", "Forecasts hook velocity, remix potential, and cross-network propagation windows."]
+            ].map(([title, copy]) => (
+              <div key={title} className="p-5 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-2xl transition hover:-translate-y-1 hover:border-[#AEF597]/40">
+                <div className="mb-3 flex items-center gap-3 text-[#AEF597]">
+                  <ShieldCheck className="h-5 w-5" />
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">{title}</h3>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-600 dark:text-[#a6a3bf]">{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* HIDDEN GEM DISCOVERY */}
+      <Section eyebrow="Hidden gem discovery" title="Find Tomorrow's Creators Today" className="scroll-reveal text-center relative select-none">
+        <div className="grid gap-6 lg:grid-cols-[.9fr_1.1fr] text-left">
+          <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] flex flex-col justify-between shadow-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+                <p className="text-[10px] uppercase tracking-wider text-slate-500">10M Follower Creator</p>
+                <p className="mt-2 text-2xl font-black text-red-500">31% Aura</p>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+                <p className="text-[10px] uppercase tracking-wider text-slate-500">15K Follower Creator</p>
+                <p className="mt-2 text-2xl font-black text-[#AEF597]">92% Aura</p>
+              </div>
+            </div>
+            <div className="mt-6 rounded-xl border border-[#AEF597]/20 bg-[#AEF597]/5 p-5">
+              <div className="flex items-center gap-3 text-[#AEF597]">
+                <Gem className="h-5 w-5" />
+                <span className="font-bold text-xs uppercase tracking-wider">Future Viral Probability: 92%</span>
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-slate-600 dark:text-[#a6a3bf]">
+                Our system detected early community compounding, high-save tutorials, and underpriced brand affinity before the follower graph caught up.
+              </p>
+            </div>
+          </GlassPanel>
+          <GlassPanel className="min-h-[360px] p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm">
+            <ResponsiveContainer width="100%" height={330}>
+              <AreaChart data={growthCurve}>
+                <defs>
+                  <linearGradient id="nexusGrowth" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#AEF597" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#AEF597" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" stroke="#6B7280" />
+                <YAxis stroke="#6B7280" />
+                <Tooltip
+                  contentStyle={{ background: "rgba(10,10,10,.95)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 8 }}
+                />
+                <Area type="monotone" dataKey="legacy" stroke="#f43f5e" fill="transparent" strokeWidth={2} />
+                <Area type="monotone" dataKey="nexus" stroke="#AEF597" fill="url(#nexusGrowth)" strokeWidth={3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </GlassPanel>
+        </div>
+      </Section>
+
+      {/* CAMPAIGN SIMULATOR */}
+      <Section
+        eyebrow="Campaign simulator"
+        title="Bloomberg-grade forecasting for culture."
+        copy="Model creator, brand, budget, and goal combinations before a single dollar is deployed."
+        className="scroll-reveal text-center relative select-none"
+      >
+        <GlassPanel className="overflow-hidden bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] text-left shadow-sm">
+          <div className="grid lg:grid-cols-[360px_1fr]">
+            <div className="border-b border-white/5 p-6 lg:border-b-0 lg:border-r">
+              {["Brand", "Creator", "Budget", "Goal"].map((item, index) => (
+                <label key={item} className="mb-5 block">
+                  <span className="mb-2 block text-[9px] uppercase tracking-wider text-slate-500">{item}</span>
+                  <div className="rounded-lg border border-white/5 bg-black/40 px-4 py-3 text-xs font-bold text-white uppercase tracking-wider">
+                    {["Astra Skin", "Mira Vale", "$84,000", "Conversion lift"][index]}
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
+              {campaignForecast.map((metric) => (
+                <div key={metric.name} className="rounded-xl border border-white/5 bg-black/30 p-5">
+                  <p className="text-[10px] uppercase tracking-wider text-slate-500">{metric.name}</p>
+                  <p className="mt-3 text-3xl font-black text-white">{metric.value}%</p>
+                  <div className="mt-4 h-1.5 rounded-full bg-white/5">
+                    <div className="h-full rounded-full bg-gradient-to-r from-[#AEF597] to-emerald-500" style={{ width: `${metric.value}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </GlassPanel>
+      </Section>
+
+      {/* AI VIRAL LAB */}
+      <Section eyebrow="AI viral lab" title="Generate, score, and sharpen content before it hits the feed." className="scroll-reveal text-center relative select-none">
+        <div className="grid gap-6 lg:grid-cols-2 text-left">
+          <GlassPanel className="min-h-[460px] p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] flex flex-col justify-between shadow-sm">
+            <div className="mb-5 flex items-center gap-3 text-[#AEF597]">
+              <PlayCircle className="h-5 w-5" />
+              <span className="text-xs uppercase tracking-wider font-bold">Generated Video Framework</span>
+            </div>
+            <div className="flex h-[340px] items-center justify-center rounded-xl border border-white/5 bg-black/40">
+              <div className="max-w-xs text-center p-6">
+                <WandSparkles className="mx-auto mb-5 h-12 w-12 text-[#AEF597] animate-pulse" />
+                <p className="text-lg font-black text-white uppercase tracking-wide">The 7-Second Rule Pivot</p>
+                <p className="mt-3 text-xs text-slate-400 leading-relaxed">Cold open, social proof snap, visual payoff, and save-trigger close.</p>
+              </div>
+            </div>
+          </GlassPanel>
+          <GlassPanel className="p-6 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm">
+            <div className="mb-5 flex items-center gap-3 text-[#AEF597]">
+              <Cpu className="h-5 w-5" />
+              <span className="text-xs uppercase tracking-wider font-bold">AI Analysis Metrics</span>
+            </div>
+            <div className="space-y-6">
+              {["Hook Strength", "Trend Match", "Shareability", "Retention Score", "Virality Score"].map((metric, index) => {
+                const value = 76 + index * 4;
+                return (
+                  <div key={metric}>
+                    <div className="mb-2 flex justify-between text-xs font-bold text-slate-400">
+                      <span>{metric.toUpperCase()}</span>
+                      <span className="text-white">{value}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/5">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#AEF597] to-emerald-500"
+                        style={{ width: `${value}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </GlassPanel>
+        </div>
+      </Section>
+
+      {/* AUTONOMOUS AI AGENT WORKFLOW STEPS */}
+      <Section eyebrow="Autonomous AI agent" title="A creator growth system that keeps working." copy="Trend, creative, campaign, and publishing agents coordinate as a single adaptive workflow." className="scroll-reveal text-center relative select-none">
+        <div className="mx-auto max-w-2xl text-left">
+          {agentSteps.map((step, index) => (
+            <div key={step} className="relative">
+              <GlassPanel className="mb-5 flex items-center gap-4 p-5 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-xl shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#AEF597]/30 bg-[#AEF597]/10 text-[#AEF597] text-xs font-black">
+                  0{index + 1}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-white text-xs uppercase tracking-wider">{step}</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wide">Confidence: {88 + index}%</p>
+                </div>
+                <Activity className="h-5 w-5 text-[#AEF597] animate-pulse" />
+              </GlassPanel>
+              {index < agentSteps.length - 1 && <ArrowDown className="mx-auto mb-5 h-5 w-5 text-[#AEF597]" />}
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* INFLUENCE UNIVERSE 3D WEBGL GRAPH */}
+      <Section
+        eyebrow="Influence Universe(TM)"
+        title="Every creator becomes a star system."
+        copy="Zoom, pan, and explore category clusters where size, color, brightness, distance, and orbit reveal influence structure."
+        className="scroll-reveal text-center relative select-none"
+      >
+        <GlassPanel className="relative h-[72vh] min-h-[560px] overflow-hidden p-0 bg-white/5 dark:bg-[#101424]/40 border border-slate-200/50 dark:border-white/10 rounded-[20px] shadow-sm">
+          <InfluenceUniverseScene />
+          <div className="pointer-events-none absolute left-4 top-4 grid gap-2 text-[10px] text-slate-400 sm:left-6 sm:top-6 z-10">
+            {["Size = Influence", "Color = Category", "Brightness = Growth", "Distance = Similarity", "Orbit = Community"].map((item) => (
+              <span key={item} className="rounded-full border border-white/5 bg-black/60 px-3 py-2 backdrop-blur-md">
+                {item.toUpperCase()}
+              </span>
+            ))}
+          </div>
+        </GlassPanel>
+      </Section>
+
       {/* PRICING */}
       <section id="pricing" className="py-28 px-6 max-w-[1200px] mx-auto scroll-reveal text-center relative select-none">
         
         <div className="space-y-4 mb-16">
           <span className="font-mono text-xs font-bold text-[#AEF597] uppercase tracking-widest block font-bold">PRICING PLANS</span>
           <h2 className="font-hanken font-bold text-3xl md:text-4xl text-slate-905 dark:text-white tracking-tight">Simple Access</h2>
-          <p className="font-sans text-base text-slate-655 dark:text-[#a6a3bf] max-w-xl mx-auto">Scale as your insight needs grow.</p>
+          <p className="font-sans text-base text-slate-800 dark:text-[#a6a3bf] max-w-xl mx-auto">Scale as your insight needs grow.</p>
         </div>
 
         {/* Free Plan Card */}
@@ -795,12 +1055,20 @@ export default function SaaSLandingPage() {
         </div>
 
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 border-t border-slate-200/50 dark:border-white/5 pt-8 mt-12 flex flex-col md:flex-row items-center justify-between gap-4 font-sans font-medium text-xs">
-          <span>&copy; 2026 Trend Fatigue Engine AI. All rights reserved.</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span>&copy; 2026 Trend Fatigue Engine AI. All rights reserved.</span>
+            <button
+              onClick={() => handleOpenAuth("login", true)}
+              className="text-[10px] font-mono text-slate-400/30 dark:text-slate-650/40 hover:text-red-500 hover:dark:text-red-400 transition-colors uppercase tracking-widest text-left cursor-pointer sm:ml-3"
+            >
+              [ Admin Terminal ]
+            </button>
+          </div>
           {/* Social Icons inside Footer */}
           <div className="flex items-center gap-4 text-slate-400 dark:text-slate-500">
-            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><InstagramIcon /></a>
-            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><TikTokIcon /></a>
-            <a href="#" className="hover:text-slate-650 dark:hover:text-white transition-colors"><TwitterIcon /></a>
+            <a href="#" className="hover:text-slate-800 dark:hover:text-white transition-colors"><InstagramIcon /></a>
+            <a href="#" className="hover:text-slate-800 dark:hover:text-white transition-colors"><TikTokIcon /></a>
+            <a href="#" className="hover:text-slate-800 dark:hover:text-white transition-colors"><TwitterIcon /></a>
           </div>
         </div>
       </footer>
@@ -828,15 +1096,31 @@ export default function SaaSLandingPage() {
 
             {/* Title Header */}
             <div className="text-center mb-6 space-y-1">
-              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-[#AEF597]/10 border border-[#AEF597]/20 text-lime-750 dark:text-[#AEF597]">
-                <Lock className="h-5 w-5" />
-              </div>
-              <h3 className="font-hanken font-bold text-xl tracking-tight">
-                {authMode === "signup" ? "Create your workspace" : "Welcome back"}
-              </h3>
-              <p className="font-sans text-xs text-slate-500 dark:text-[#a6a3bf] font-medium leading-relaxed">
-                {authMode === "signup" ? "Get started with your free creator workspace today." : "Access your active listen nodes and telemetry."}
-              </p>
+              {isAdminLogin ? (
+                <>
+                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-red-955/20 border border-red-500/25 text-red-500 animate-pulse">
+                    <Lock className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-mono font-bold text-lg tracking-wider text-white uppercase">
+                    Admin Decryptor
+                  </h3>
+                  <p className="font-mono text-[9px] text-red-550/80 font-bold uppercase tracking-widest leading-relaxed">
+                    [ SYSTEM SECURITY ARCHWAY ]
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-[#AEF597]/10 border border-[#AEF597]/20 text-lime-750 dark:text-[#AEF597]">
+                    <Lock className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-hanken font-bold text-xl tracking-tight">
+                    {authMode === "signup" ? "Create your workspace" : "Welcome back"}
+                  </h3>
+                  <p className="font-sans text-xs text-slate-500 dark:text-[#a6a3bf] font-medium leading-relaxed">
+                    {authMode === "signup" ? "Get started with your free creator workspace today." : "Access your active listen nodes and telemetry."}
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Error Message */}
@@ -851,7 +1135,7 @@ export default function SaaSLandingPage() {
             <form onSubmit={handleAuthSubmit} className="space-y-4 text-left">
               
               {/* Name Field (Sign Up Only) */}
-              {authMode === "signup" && (
+              {!isAdminLogin && authMode === "signup" && (
                 <div className="space-y-1.5">
                   <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Workspace Operator</label>
                   <div className="relative">
@@ -869,29 +1153,33 @@ export default function SaaSLandingPage() {
               )}
 
               {/* Email Field */}
-              <div className="space-y-1.5">
-                <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
-                  <input
-                    type="email"
-                    placeholder="jane@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
-                    required
-                  />
+              {!isAdminLogin && (
+                <div className="space-y-1.5">
+                  <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
+                    <input
+                      type="email"
+                      placeholder="jane@company.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Password Field */}
               <div className="space-y-1.5">
-                <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">Access Phrase</label>
+                <label className="font-mono text-[9px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">
+                  {isAdminLogin ? "Decryption Access Key (e.g. batman2026)" : "Password"}
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-[#8f8ca8]" />
                   <input
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={isAdminLogin ? "ENTER SECURE ACCESS KEY..." : "••••••••"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full h-11 pl-10 pr-4 bg-slate-55 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#090716] focus:border-[#AEF597] dark:focus:border-[#AEF597] transition-all focus:ring-1 focus:ring-[#AEF597]/20"
@@ -904,75 +1192,92 @@ export default function SaaSLandingPage() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full h-11 bg-brand-gradient text-slate-950 font-bold rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
+                className={cn(
+                  "w-full h-11 font-bold rounded-lg text-xs transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50",
+                  isAdminLogin 
+                    ? "bg-red-950/40 hover:bg-red-950/60 text-red-550 border border-red-500/25 hover:border-red-500/50 uppercase tracking-widest font-mono" 
+                    : "bg-brand-gradient text-slate-950"
+                )}
               >
                 {authLoading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
+                    <svg className={cn("animate-spin h-4 w-4", isAdminLogin ? "text-red-550" : "text-slate-950")} viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    <span>Connecting Nodes...</span>
+                    <span>{isAdminLogin ? "DECRYPTING COMMAND KEY..." : "Connecting Nodes..."}</span>
                   </>
                 ) : (
                   <>
-                    <span>{authMode === "signup" ? "Build Workspace" : "Access Workspace"}</span>
+                    <span>{isAdminLogin ? "Access Terminal" : (authMode === "signup" ? "Build Workspace" : "Access Workspace")}</span>
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Social Authentication divider */}
-            <div className="relative my-5 text-center select-none">
-              <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-slate-200 dark:border-white/5" />
-              <span className="relative bg-white dark:bg-[#0c0a21] px-3 font-mono text-[8px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">
-                or continue with
-              </span>
-            </div>
+            {!isAdminLogin && (
+              <>
+                {/* Social Authentication divider */}
+                <div className="relative my-5 text-center select-none">
+                  <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-slate-200 dark:border-white/5" />
+                  <span className="relative bg-white dark:bg-[#0c0a21] px-3 font-mono text-[8px] font-bold text-slate-400 dark:text-[#8f8ca8] uppercase tracking-widest">
+                    or continue with
+                  </span>
+                </div>
 
-            {/* Google Authentication button */}
-            <button
-              onClick={handleAuthSubmit}
-              className="w-full h-11 border border-slate-200 dark:border-white/10 hover:bg-slate-55 dark:hover:bg-white/5 text-slate-750 dark:text-white font-bold rounded-lg text-xs flex items-center justify-center gap-2 transition-colors duration-200"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
-                <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  fill="#EA4335"
-                />
-              </svg>
-              <span>Continue with Google</span>
-            </button>
+                {/* Google Authentication button */}
+                <button
+                  onClick={handleAuthSubmit}
+                  className="w-full h-11 border border-slate-200 dark:border-white/10 hover:bg-slate-55 dark:hover:bg-white/5 text-slate-750 dark:text-white font-bold rounded-lg text-xs flex items-center justify-center gap-2 transition-colors duration-200"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  <span>Continue with Google</span>
+                </button>
 
-            {/* Auth Mode Toggle Footer Link */}
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => {
-                  setAuthMode(authMode === "signup" ? "login" : "signup");
-                  setAuthError("");
-                }}
-                className="font-sans text-xs font-bold text-slate-500 dark:text-[#8f8ca8] hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors"
-              >
-                {authMode === "signup" ? (
-                  <>Already have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Sign In</span></>
-                ) : (
-                  <>Don&apos;t have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Build Workspace</span></>
-                )}
-              </button>
-            </div>
+                {/* Auth Mode Toggle Footer Link */}
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => {
+                      setAuthMode(authMode === "signup" ? "login" : "signup");
+                      setAuthError("");
+                    }}
+                    className="font-sans text-xs font-bold text-slate-500 dark:text-[#8f8ca8] hover:text-lime-700 dark:hover:text-[#AEF597] transition-colors"
+                  >
+                    {authMode === "signup" ? (
+                      <>Already have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Sign In</span></>
+                    ) : (
+                      <>Don&apos;t have an account? <span className="text-lime-700 dark:text-[#AEF597] underline">Build Workspace</span></>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {isAdminLogin && (
+              <div className="mt-6 text-center">
+                <span className="font-mono text-[8px] font-bold text-red-500/60 uppercase tracking-widest block animate-pulse">
+                  WARNSHIELD v4.0 SECURE ENVELOPE ACTIVE
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

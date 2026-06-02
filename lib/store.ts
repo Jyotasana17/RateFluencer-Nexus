@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 
 type NexusState = {
@@ -9,6 +11,8 @@ type NexusState = {
   // Unified authentication and tactical settings
   isAuthenticated: boolean;
   setIsAuthenticated: (auth: boolean) => void;
+  isAdmin: boolean;
+  setIsAdmin: (admin: boolean) => void;
   fatigueThreshold: number;
   setFatigueThreshold: (val: number) => void;
   audioAlerts: boolean;
@@ -28,6 +32,8 @@ export const useNexusStore = create<NexusState>((set) => ({
   // Settings initial states
   isAuthenticated: true,
   setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
+  isAdmin: false,
+  setIsAdmin: (admin) => set({ isAdmin: admin }),
   fatigueThreshold: 80,
   setFatigueThreshold: (val) => set({ fatigueThreshold: val }),
   audioAlerts: true,
@@ -37,4 +43,3 @@ export const useNexusStore = create<NexusState>((set) => ({
   aiModel: "nexus-v4-turbo",
   setAiModel: (val) => set({ aiModel: val })
 }));
-

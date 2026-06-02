@@ -2,22 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  TrendingDown, 
-  TrendingUp, 
-  ShieldAlert, 
   Rocket, 
   Bookmark, 
   Sparkles, 
-  Play, 
-  Check, 
-  Layers, 
-  Flame, 
-  Gauge, 
   Bot, 
-  Search,
-  Lock,
-  Cpu,
-  ChevronDown
+  Search
 } from "lucide-react";
 
 // Interactive Dataset matching the specified top dying trends
@@ -101,9 +90,11 @@ const trendsDataset = [
 
 export default function AdminDashboardPage() {
   const [selectedTrendIndex, setSelectedTrendIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [customTrend, setCustomTrend] = useState<typeof trendsDataset[0] | null>(null);
   
   // Get currently selected trend metrics
-  const activeTrend = trendsDataset[selectedTrendIndex];
+  const activeTrend = customTrend || trendsDataset[selectedTrendIndex];
 
   // AI Insight Console stream simulation states
   const [isCalibrating, setIsCalibrating] = useState(false);
@@ -128,7 +119,85 @@ export default function AdminDashboardPage() {
     setConsoleLogs([]);
     setCompletedInsight("");
     setHasFinishedStream(false);
-  }, [selectedTrendIndex]);
+  }, [selectedTrendIndex, customTrend]);
+
+  // Dynamic Algorithmic LLM Telemetry Generator for any keyword in the dictionary!
+  const handleCustomSearch = (query: string) => {
+    if (!query.trim()) return;
+    setIsCalibrating(true);
+    setCompletedInsight("");
+    setHasFinishedStream(false);
+    setConsoleLogs([`> INGESTING DIGITAL MATRIX WAVEFIELDS FOR "${query.toUpperCase()}"...`]);
+    
+    const cleanQuery = query.trim();
+    const hash = cleanQuery.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const fatigueVal = (hash % 24) + 75; // 75 to 98
+    const sentimentDecayVal = -(hash % 26) - 68; // -68% to -93%
+    const velocityVal = -(hash % 20) - 21; // -21% to -40%
+    const trendScoreVal = (hash % 28) + 15; // 15 to 42
+    const confidenceVal = (hash % 15) + 82; // 82% to 96%
+    
+    const customKeywords = [
+      ["Generic", "Repetitive", "Spam"],
+      ["Boring", "AI Slop", "Skip"],
+      ["Cringe", "Forced", "Overused"],
+      ["Tired", "Fake", "Unrealistic"],
+      ["Low Effort", "Plagiarized", "Repetitive"]
+    ][hash % 5];
+
+    const customStrategy = `The market is saturated with standard, generic ${cleanQuery} content. Pivot immediately to: Raw behind-the-scenes case studies, unedited single-take videos, or specific product telemetry of ${cleanQuery}. Predicted virality intersection in 72 hours.`;
+    
+    const customInsight = `The '${cleanQuery}' space has crossed the critical fatigue horizon. Audiences actively reject repetitive automated scripting of ${cleanQuery}. Shift immediately to human-centric stories and raw operational transparency.`;
+
+    const generatedTrend = {
+      trend: cleanQuery,
+      fatigueIndex: `${fatigueVal}/100`,
+      fatigueValue: fatigueVal,
+      sentimentDecay: `${sentimentDecayVal}%`,
+      velocity: `${velocityVal}%`,
+      toxicKeywords: customKeywords,
+      strategyText: customStrategy,
+      confidence: `${confidenceVal}%`,
+      confidenceValue: confidenceVal,
+      trendScore: trendScoreVal,
+      fatigueScore: `${fatigueVal}%`,
+      growth: `${velocityVal}%`,
+      insightText: customInsight
+    };
+
+    const logSequence = [
+      `SCANNING: search keyword "${cleanQuery}"...`,
+      `PARSING: raw comment volumes on ${cleanQuery}...`,
+      `CALCULATING: attention fatigue index for ${cleanQuery}...`,
+      `GENERATING: counter-strategy narrative brief...`,
+      "SUCCESS: dynamic LLM telemetry compiled."
+    ];
+
+    let currentLogIndex = 0;
+    const interval = setInterval(() => {
+      if (currentLogIndex < logSequence.length) {
+        setConsoleLogs((prev) => [...prev, `> ${logSequence[currentLogIndex]}`]);
+        currentLogIndex++;
+      } else {
+        clearInterval(interval);
+        setIsCalibrating(false);
+        setHasFinishedStream(true);
+        setCustomTrend(generatedTrend);
+        
+        // Typewriter effect
+        let charIndex = 0;
+        const typingInterval = setInterval(() => {
+          if (charIndex <= generatedTrend.insightText.length) {
+            setCompletedInsight(generatedTrend.insightText.slice(0, charIndex));
+            charIndex += 2;
+          } else {
+            clearInterval(typingInterval);
+          }
+        }, 12);
+      }
+    }, 280);
+  };
 
   // Simulate CLI compilation sequence
   const startTelemetryCalibrator = () => {
@@ -197,7 +266,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#AEF597] animate-pulse" />
-                <h2 className="text-sm font-black text-white uppercase tracking-wider">Creator Market Overview</h2>
+                <h2 className="text-sm font-black text-white uppercase tracking-wider">CREATOR VIBE MONITOR</h2>
               </div>
               <span className="text-[9px] font-extrabold text-[#AEF597] bg-[#AEF597]/10 px-2 py-0.5 rounded border border-[#AEF597]/20 uppercase tracking-widest animate-pulse">LIVE FEED</span>
             </div>
@@ -206,42 +275,82 @@ export default function AdminDashboardPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               
               {/* Block 1 */}
-              <div className="bg-black/40 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors">
-                <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Total Active Topics</div>
-                <div className="text-xl font-bold text-white mt-1.5 font-sans tracking-tight">1,247</div>
-                <div className="flex items-center gap-1 text-[9px] text-[#AEF597] mt-1.5 font-bold uppercase">
+              <div className="glass-panel border bg-[#060606]/85 border-white/5 rounded-xl p-4 transition-all duration-300 hover:border-[#AEF597]/30 hover:shadow-[0_0_20px_rgba(174,245,151,0.08)] hover:-translate-y-0.5 relative overflow-hidden group/kpi">
+                <div className="absolute -right-4 -top-4 h-12 w-12 bg-gradient-to-br from-[#AEF597]/10 to-transparent rounded-full blur-md opacity-0 group-hover/kpi:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover/kpi:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.03] to-transparent skew-x-[-25deg] group-hover/kpi:left-[150%] transition-all duration-[800ms] ease-in-out" />
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider font-mono">TOTAL ACTIVE WAVES</span>
+                  <span className="relative flex h-1.5 w-1.5 shrink-0 select-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#AEF597] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#AEF597]" />
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-white mt-1.5 font-mono tracking-tight">1,247</div>
+                <div className="flex items-center gap-1 text-[9px] text-[#AEF597] mt-1.5 font-bold uppercase font-mono">
                   <span>↑</span>
-                  <span>12.4% vs last 7d</span>
+                  <span>12.4% VS LAST 7D</span>
                 </div>
               </div>
 
               {/* Block 2 */}
-              <div className="bg-black/40 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors">
-                <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Rising Topics</div>
-                <div className="text-xl font-bold text-white mt-1.5 font-sans tracking-tight">231</div>
-                <div className="flex items-center gap-1 text-[9px] text-[#AEF597] mt-1.5 font-bold uppercase">
+              <div className="glass-panel border bg-[#060606]/85 border-white/5 rounded-xl p-4 transition-all duration-300 hover:border-[#AEF597]/30 hover:shadow-[0_0_20px_rgba(174,245,151,0.08)] hover:-translate-y-0.5 relative overflow-hidden group/kpi">
+                <div className="absolute -right-4 -top-4 h-12 w-12 bg-gradient-to-br from-[#AEF597]/10 to-transparent rounded-full blur-md opacity-0 group-hover/kpi:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover/kpi:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.03] to-transparent skew-x-[-25deg] group-hover/kpi:left-[150%] transition-all duration-[800ms] ease-in-out" />
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider font-mono">WAVES ON THE GLOWUP</span>
+                  <span className="relative flex h-1.5 w-1.5 shrink-0 select-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#AEF597] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#AEF597]" />
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-white mt-1.5 font-mono tracking-tight">231</div>
+                <div className="flex items-center gap-1 text-[9px] text-[#AEF597] mt-1.5 font-bold uppercase font-mono">
                   <span>↑</span>
-                  <span>18.7% vs last 7d</span>
+                  <span>18.7% VS LAST 7D</span>
                 </div>
               </div>
 
               {/* Block 3 */}
-              <div className="bg-black/40 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors">
-                <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Declining Topics</div>
-                <div className="text-xl font-bold text-white mt-1.5 font-sans tracking-tight">487</div>
-                <div className="flex items-center gap-1 text-[9px] text-red-500 mt-1.5 font-bold uppercase">
+              <div className="glass-panel border bg-[#060606]/85 border-white/5 rounded-xl p-4 transition-all duration-300 hover:border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.08)] hover:-translate-y-0.5 relative overflow-hidden group/kpi">
+                <div className="absolute -right-4 -top-4 h-12 w-12 bg-gradient-to-br from-red-500/10 to-transparent rounded-full blur-md opacity-0 group-hover/kpi:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover/kpi:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.03] to-transparent skew-x-[-25deg] group-hover/kpi:left-[150%] transition-all duration-[800ms] ease-in-out" />
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider font-mono">COOKED WAVES (DO NOT POST)</span>
+                  <span className="relative flex h-1.5 w-1.5 shrink-0 select-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-white mt-1.5 font-mono tracking-tight">487</div>
+                <div className="flex items-center gap-1 text-[9px] text-red-500 mt-1.5 font-bold uppercase font-mono">
                   <span>↓</span>
-                  <span>24.3% vs last 7d</span>
+                  <span>24.3% VS LAST 7D</span>
                 </div>
               </div>
 
               {/* Block 4 */}
-              <div className="bg-black/40 border border-white/5 rounded-xl p-4 hover:border-white/10 transition-colors">
-                <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Average Lifespan</div>
-                <div className="text-xl font-bold text-white mt-1.5 font-sans tracking-tight">3.2 Days</div>
-                <div className="flex items-center gap-1 text-[9px] text-red-500 mt-1.5 font-bold uppercase">
+              <div className="glass-panel border bg-[#060606]/85 border-white/5 rounded-xl p-4 transition-all duration-300 hover:border-red-500/30 hover:shadow-[0_0_20px_rgba(239,68,68,0.08)] hover:-translate-y-0.5 relative overflow-hidden group/kpi">
+                <div className="absolute -right-4 -top-4 h-12 w-12 bg-gradient-to-br from-red-500/10 to-transparent rounded-full blur-md opacity-0 group-hover/kpi:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden opacity-0 group-hover/kpi:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/[0.03] to-transparent skew-x-[-25deg] group-hover/kpi:left-[150%] transition-all duration-[800ms] ease-in-out" />
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider font-mono">HYPE HALF-LIFE</span>
+                  <span className="relative flex h-1.5 w-1.5 shrink-0 select-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+                  </span>
+                </div>
+                <div className="text-xl font-bold text-white mt-1.5 font-mono tracking-tight">3.2 Days</div>
+                <div className="flex items-center gap-1 text-[9px] text-red-500 mt-1.5 font-bold uppercase font-mono">
                   <span>↓</span>
-                  <span>0.8 days vs last 7d</span>
+                  <span>0.8 DAYS VS LAST 7D</span>
                 </div>
               </div>
 
@@ -250,18 +359,18 @@ export default function AdminDashboardPage() {
             {/* Second Section: Top Dying Trends Table */}
             <div className="space-y-4">
               <div className="text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-1.5">
-                <span>Top Dying Trends</span>
-                <span className="text-[#6B7280]">(by Fatigue Index)</span>
+                <span>MOST COOKED TRENDS</span>
+                <span className="text-[#6B7280]">(by Cringe Factor)</span>
               </div>
               
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-white/5 text-[#6B7280] font-extrabold uppercase">
-                      <th className="py-2.5">Trend Name</th>
-                      <th className="py-2.5 text-center">Fatigue Index</th>
-                      <th className="py-2.5 text-center">Sentiment Decay</th>
-                      <th className="py-2.5 text-right">Velocity</th>
+                      <th className="py-2.5">TREND NAME</th>
+                      <th className="py-2.5 text-center">CRINGE RATING</th>
+                      <th className="py-2.5 text-center">FLOP VELOCITY</th>
+                      <th className="py-2.5 text-right">DECAY RATE</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
@@ -270,7 +379,10 @@ export default function AdminDashboardPage() {
                       return (
                         <tr 
                           key={t.trend} 
-                          onClick={() => setSelectedTrendIndex(idx)}
+                          onClick={() => {
+                            setCustomTrend(null);
+                            setSelectedTrendIndex(idx);
+                          }}
                           className={`cursor-pointer transition-all ${
                             isSelected 
                               ? "bg-[#AEF597]/5 text-white font-extrabold border-l-2 border-[#AEF597]" 
@@ -296,12 +408,12 @@ export default function AdminDashboardPage() {
 
           {/* Table Footer Actions */}
           <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[10px]">
-            <span className="text-[#6B7280]">Showing 5 critical attention burnout vectors</span>
+            <span className="text-[#6B7280]">Tracking 5 absolutely cooked creative flops</span>
             <button 
               onClick={() => triggerToast("Directing to all saturated trend matrices...")}
               className="text-[#AEF597] font-bold uppercase hover:underline flex items-center gap-1"
             >
-              <span>View All Dying Trends</span>
+              <span>VIEW ALL COOKED WAVES</span>
               <span className="text-xs">→</span>
             </button>
           </div>
@@ -320,21 +432,53 @@ export default function AdminDashboardPage() {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 2v4M12 18v4M4 12H2M22 12h-4" />
               </svg>
-              <h2 className="text-sm font-black text-white uppercase tracking-wider">Saturation Matrix</h2>
+              <h2 className="text-sm font-black text-white uppercase tracking-wider">THE CRINGE MATRIX</h2>
             </div>
 
-            {/* Active Query Display */}
+            {/* Active Query Display & Search */}
             <div className="space-y-1.5">
-              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Active Query</div>
-              <div className="bg-black/60 border border-[#AEF597]/25 text-[#AEF597] rounded-xl px-4 py-2.5 font-bold text-center tracking-wide shadow-[0_0_10px_rgba(174,245,151,0.04)]">
-                {activeTrend.trend}
+              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider flex justify-between items-center">
+                <span>ACTIVE QUERY / VIBE CHECK</span>
+                {customTrend && (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setCustomTrend(null);
+                      setSearchQuery("");
+                    }}
+                    className="text-[8px] font-black text-red-500 hover:underline uppercase tracking-wider"
+                  >
+                    [RESET SEARCH]
+                  </button>
+                )}
               </div>
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCustomSearch(searchQuery);
+                }}
+                className="relative flex items-center"
+              >
+                <input 
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={activeTrend.trend.toUpperCase()}
+                  className="w-full bg-black/60 border border-[#AEF597]/25 text-[#AEF597] placeholder-[#AEF597]/40 rounded-xl pl-4 pr-10 py-2.5 font-mono text-xs font-bold tracking-wide focus:outline-none focus:border-[#AEF597]/60 focus:shadow-[0_0_12px_rgba(174,245,151,0.1)] transition-all uppercase"
+                />
+                <button 
+                  type="submit"
+                  className="absolute right-3 text-[#AEF597]/60 hover:text-[#AEF597] transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              </form>
             </div>
 
             {/* Fatigue Index & Hardware Progress Bar */}
             <div className="space-y-3 pt-2">
               <div className="flex justify-between items-baseline">
-                <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Fatigue Index</span>
+                <span className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">CRINGE RATIO</span>
                 <span className="text-lg font-black text-red-500">{activeTrend.fatigueIndex}</span>
               </div>
               
@@ -359,7 +503,7 @@ export default function AdminDashboardPage() {
 
             {/* Sentiment Decay */}
             <div className="space-y-1">
-              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Sentiment Decay (48H)</div>
+              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">VIBE COLLAPSE SPEED (48H)</div>
               <div className="text-3xl font-black text-red-500 tracking-tight leading-none pt-1">
                 {activeTrend.sentimentDecay}
               </div>
@@ -367,7 +511,7 @@ export default function AdminDashboardPage() {
 
             {/* Toxic Keywords Tags */}
             <div className="space-y-2 pt-2">
-              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Toxic Keywords Detected</div>
+              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">AUDIENCE RED FLAGS</div>
               <div className="flex flex-wrap gap-2">
                 {activeTrend.toxicKeywords.map((word) => (
                   <span 
@@ -383,7 +527,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="text-[8px] font-extrabold text-[#6B7280] uppercase tracking-wider pt-4 border-t border-white/5 text-center mt-6">
-            CALCULATED THROUGH DIRECT COMMENTS TELEMETRY
+            TELEMETRY PARSED FROM LIVE VIBE CHECKS
           </div>
 
         </div>
@@ -401,12 +545,12 @@ export default function AdminDashboardPage() {
             
             <div className="flex items-center gap-2 border-b border-white/5 pb-3">
               <Bot className="h-4 w-4 text-[#AEF597] animate-bounce" />
-              <h2 className="text-sm font-black text-white uppercase tracking-wider">AI Counter-Strike Strategy Generated</h2>
+              <h2 className="text-sm font-black text-white uppercase tracking-wider">AI RIZZ BLUEPRINT GENERATED</h2>
             </div>
 
             <div className="bg-black/40 border border-white/5 rounded-xl p-5 space-y-3 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-12 h-12 bg-[#AEF597]/[0.02] rounded-full blur-md" />
-              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">Strategic Recommendation</div>
+              <div className="text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">HOW TO UN-COOK YOUR CONTENT</div>
               <p className="text-xs leading-relaxed text-[#f1f0f7] tracking-wide">
                 {activeTrend.strategyText}
               </p>
@@ -448,8 +592,8 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <div className="text-[10px] font-black text-white uppercase tracking-wider">High Confidence</div>
-                <div className="text-[8px] text-[#6B7280] uppercase tracking-widest font-bold mt-0.5">Calculated Success Potential</div>
+                <div className="text-[10px] font-black text-white uppercase tracking-wider">HIGH AURA</div>
+                <div className="text-[8px] text-[#6B7280] uppercase tracking-widest font-bold mt-0.5">EXPECTED W RATIO</div>
               </div>
             </div>
 
@@ -457,10 +601,10 @@ export default function AdminDashboardPage() {
             <div className="flex-1 w-full space-y-2">
               <button 
                 onClick={() => triggerToast("Strategized angle deployed! Initializing script compiler...")}
-                className="w-full h-11 bg-[#AEF597] hover:bg-[#A8F690] text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-[0_0_12px_rgba(174,245,151,0.3)] flex items-center justify-center gap-2"
+                className="w-full h-11 bg-[#AEF597] hover:bg-[#A8F690] text-slate-955 font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-[0_0_12px_rgba(174,245,151,0.3)] flex items-center justify-center gap-2"
               >
-                <Rocket className="w-3.5 h-3.5 fill-slate-950 text-slate-950 animate-pulse" />
-                <span>Deploy Strategy to Content Studio</span>
+                <Rocket className="w-3.5 h-3.5 fill-slate-950 text-slate-955 animate-pulse" />
+                <span>DEPLOY RIZZ TO CONTENT STUDIO</span>
               </button>
               
               <button 
@@ -468,7 +612,7 @@ export default function AdminDashboardPage() {
                 className="w-full h-9 bg-transparent hover:bg-white/5 text-white border border-white/10 hover:border-white/20 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
               >
                 <Bookmark className="w-3 h-3 text-[#B3B3B3]" />
-                <span>Save Strategy</span>
+                <span>LOCK IN BLUEPRINT</span>
               </button>
             </div>
 
@@ -489,9 +633,9 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">
                 <span>🔥</span>
-                <span>Trend Score</span>
+                <span>AURA LEVEL</span>
               </div>
-              <span className="text-[8px] font-extrabold text-red-500 bg-red-950/20 border border-red-500/20 px-1.5 py-0.5 rounded uppercase tracking-wider">DECLINE</span>
+              <span className="text-[8px] font-extrabold text-red-500 bg-red-950/20 border border-red-500/20 px-1.5 py-0.5 rounded uppercase tracking-wider">FLOPPING</span>
             </div>
             
             <div className="flex items-baseline gap-2">
@@ -512,7 +656,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="text-[8px] font-extrabold text-[#6B7280] uppercase tracking-wider pt-2 border-t border-white/5 mt-2">
-            ORGANIC INTEREST LEVELS
+            AURA RETENTION METRICS
           </div>
         </div>
 
@@ -524,9 +668,9 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">
                 <span>⚠️</span>
-                <span>Fatigue Score</span>
+                <span>CRINGE COEFFICIENT</span>
               </div>
-              <span className="text-[8px] font-extrabold text-[#AEF597] bg-[#AEF597]/10 border border-[#AEF597]/20 px-1.5 py-0.5 rounded uppercase tracking-wider">OUR USP</span>
+              <span className="text-[8px] font-extrabold text-[#AEF597] bg-[#AEF597]/10 border border-[#AEF597]/20 px-1.5 py-0.5 rounded uppercase tracking-wider">W REALITY CHECK</span>
             </div>
 
             <div className="flex items-center justify-between gap-4 pt-1">
@@ -535,7 +679,7 @@ export default function AdminDashboardPage() {
                 <span className="text-xs font-black text-white leading-none">
                   Fatigue: <span className="text-red-500">{activeTrend.fatigueScore}</span>
                 </span>
-                <span className="text-[8px] font-bold text-red-500 bg-red-950/20 border border-red-500/20 px-1 py-0.5 rounded uppercase tracking-widest block w-fit mt-1">CRITICAL</span>
+                <span className="text-[8px] font-bold text-red-500 bg-red-950/20 border border-red-500/20 px-1 py-0.5 rounded uppercase tracking-widest block w-fit mt-1">COOKED</span>
               </div>
 
               {/* Mini SVGCircle */}
@@ -560,7 +704,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="text-[8px] font-extrabold text-[#6B7280] uppercase tracking-wider pt-2 border-t border-white/5 mt-2">
-            BASED ON: Trend decline, Overuse
+            BASED ON: L RATIOS & CORNY SPAM
           </div>
         </div>
 
@@ -572,9 +716,9 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">
                 <span>📈</span>
-                <span>Growth</span>
+                <span>HYPE MOMENTUM</span>
               </div>
-              <span className="text-[8px] font-extrabold text-red-500 bg-red-950/20 border border-red-500/20 px-1.5 py-0.5 rounded uppercase tracking-wider">VELOCITY</span>
+              <span className="text-[8px] font-extrabold text-red-500 bg-red-950/20 border border-red-500/20 px-1.5 py-0.5 rounded uppercase tracking-wider">DECAY SPEED</span>
             </div>
 
             <div className="flex items-baseline gap-2">
@@ -595,7 +739,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="text-[8px] font-extrabold text-[#6B7280] uppercase tracking-wider pt-2 border-t border-white/5 mt-2">
-            7-DAY ATTENTION GROWTH
+            7D ATTENTION RETENTION
           </div>
         </div>
 
@@ -607,16 +751,16 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between border-b border-white/5 pb-2">
               <div className="flex items-center gap-1 text-[9px] font-extrabold text-[#6B7280] uppercase tracking-wider">
                 <span>🤖</span>
-                <span>Narrative Status</span>
+                <span>NARRATIVE CHEAT SHEET</span>
               </div>
-              <span className="text-[8px] font-extrabold text-[#AEF597] bg-[#AEF597]/10 border border-[#AEF597]/20 px-1.5 py-0.5 rounded uppercase tracking-wider">WOW FEATURE</span>
+              <span className="text-[8px] font-extrabold text-[#AEF597] bg-[#AEF597]/10 border border-[#AEF597]/20 px-1.5 py-0.5 rounded uppercase tracking-wider">AI HYPE CHECK</span>
             </div>
 
             {/* Simulated Shell Screen */}
             <div className="bg-black/60 border border-white/5 rounded-lg p-2.5 min-h-[70px] max-h-[85px] flex items-center justify-center overflow-y-auto relative text-left">
               {!isCalibrating && !hasFinishedStream && (
                 <p className="text-[8px] leading-relaxed text-[#6B7280] text-center uppercase tracking-wide font-extrabold select-none">
-                  Ready to synthesize curves.<br />Click 'Get AI Insight' to trigger prediction.
+                  Ready to vibe-check.<br />{"Click 'DIAGNOSE VIBE' to trigger prediction."}
                 </p>
               )}
 
@@ -627,7 +771,7 @@ export default function AdminDashboardPage() {
                   ))}
                   <div className="flex items-center gap-1.5 text-white pt-1">
                     <span className="w-2 h-2 rounded-full border-t border-[#AEF597] animate-spin" />
-                    <span>CALIBRATING INDEX...</span>
+                    <span>CALIBRATING AURA MATRIX...</span>
                   </div>
                 </div>
               )}
@@ -646,9 +790,9 @@ export default function AdminDashboardPage() {
             <button 
               onClick={startTelemetryCalibrator}
               disabled={isCalibrating}
-              className="w-full h-8 bg-brand-gradient hover:shadow-button-glow text-slate-950 font-black rounded-lg text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 disabled:opacity-50 transition-all duration-250 active:scale-95 shrink-0"
+              className="w-full h-8 bg-brand-gradient hover:shadow-button-glow text-slate-955 font-black rounded-lg text-[9px] uppercase tracking-wider flex items-center justify-center gap-1 disabled:opacity-50 transition-all duration-250 active:scale-95 shrink-0"
             >
-              <span>Get AI Insight</span>
+              <span>DIAGNOSE VIBE</span>
               <span className="text-[10px]">→</span>
             </button>
 

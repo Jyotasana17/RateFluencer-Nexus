@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, OrbitControls, Stars } from "@react-three/drei";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 
 type Node = {
@@ -83,6 +83,15 @@ function GraphLine({ start, end }: { start: [number, number, number]; end: [numb
 }
 
 export function InfluenceHeroScene({ compact = false }: { compact?: boolean }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="w-full h-full min-h-[300px] bg-[#050816] rounded-2xl" />;
+  }
+
   return (
     <Canvas camera={{ position: [0, 0.4, compact ? 7 : 8.5], fov: 54 }} dpr={[1, 1.6]} gl={{ antialias: true, preserveDrawingBuffer: true }}>
       <color attach="background" args={["#050816"]} />
@@ -134,6 +143,15 @@ function GalaxyStars() {
 }
 
 export function InfluenceUniverseScene() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="w-full h-full min-h-[400px] bg-[#050816] rounded-3xl" />;
+  }
+
   return (
     <Canvas camera={{ position: [0, 5.2, 11], fov: 52 }} dpr={[1, 1.6]} gl={{ preserveDrawingBuffer: true }}>
       <color attach="background" args={["#050816"]} />
