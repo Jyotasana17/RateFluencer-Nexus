@@ -9,3 +9,8 @@ yarn-error.log*
 pnpm-debug.log*
 dev-server*.log
 artifacts
+
+# Agent files
+implementation_plan.md
+walkthrough.md
+task.md

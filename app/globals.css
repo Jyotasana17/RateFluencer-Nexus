@@ -15,7 +15,7 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #090716; /* Default Dark Mode */
+  background-color: #050505; /* Default Dark Mode */
   transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -26,7 +26,7 @@ html:not(.dark) {
 body {
   min-height: 100vh;
   margin: 0;
-  background-color: #090716;
+  background-color: #050505;
   color: #f1f0f7;
   font-family: var(--font-inter);
   overflow-x: hidden;
@@ -336,3 +336,26 @@ html:not(.dark) .animate-shimmer {
 .ring-pulse-green {
   animation: ringPulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
 }
+
+/* Custom Marquee Ticker Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+
+/* Oscilloscope Heartbeat Line */
+@keyframes heartbeat {
+  0%, 100% { stroke-dashoffset: 200; }
+  50% { stroke-dashoffset: 0; }
+}
+
+.animate-heartbeat {
+  stroke-dasharray: 200;
+  animation: heartbeat 6s linear infinite;
+}

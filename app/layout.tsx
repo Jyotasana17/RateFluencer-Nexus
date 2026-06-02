@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Hanken_Grotesk, JetBrains_Mono, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,6 +17,13 @@ const hanken = Hanken_Grotesk({
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-ibm-plex",
   display: "swap",
 });
 
@@ -47,7 +54,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`dark ${inter.variable} ${hanken.variable} ${jetbrains.variable}`}
+      className={`dark ${inter.variable} ${hanken.variable} ${jetbrains.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased" suppressHydrationWarning>
